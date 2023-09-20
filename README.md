@@ -3,13 +3,20 @@ This is the repository for my website, https://peakaltitudestudio.com
 
 ## Steps for creation according to ChatGPT
 ### Step 1: Set Up Your Development Environment
-- Ensure you have Node.js and npm installed on your Macbook.
-- Install VS Code for your Integrated Development Environment (IDE).
-- Set up AWS CLI on your machine for managing AWS resources.
+[x] Ensure you have Node.js and npm installed on your Macbook.
+    [x] Upgrade if needed
+[x] Install VS Code for your Integrated Development Environment (IDE).
+[x] Create and AWS Account
+    [x] Configure IAM Group, Policies, and User
+[x] Set up AWS CLI on your machine for managing AWS resources.
 
 ### Step 2: Create a React Application
-- Use create-react-app or your preferred method to initialize a React project.
-- Set up your project structure, including folders for components, pages, and assets.
+[x] Use create-react-app or your preferred method to initialize a React project.
+[] Initial Cleanup
+    [] Remove any default code in src/App.js and start building your custom components.
+    [] Set up your project's CSS and styling framework if needed.
+    [] Configure any additional dependencies required for your specific project, such as video player libraries.
+[] Set up your project structure, including folders for components, pages, and assets.
 
 ### Step 3: Design the Main Page
 - Create a main page layout that includes your 4K video player.
