@@ -15,6 +15,7 @@ jobs:
 
     - name: Set up Docker
       run: |
+        ls
         cd pas-wesite
         docker build -t pas-website .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
