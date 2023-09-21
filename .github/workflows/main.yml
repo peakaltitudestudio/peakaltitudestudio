@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - main  # Change this to the branch you want to deploy from
+      - main
 
 jobs:
   build-and-deploy:
@@ -15,10 +15,12 @@ jobs:
 
     - name: Set up Docker
       run: |
-        docker build -t your-docker-image-name .
+        docker build -t pas-website .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push your-docker-image-name
+        docker push pas-website
 
-    # - name: Deploy to AWS EC2
-    #   run: |
-    #     ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@your-ec2-instance-ip "docker pull your-docker-image-name && docker run -d -p 80:80 your-docker-image-name"
+    - name: Deploy to AWS EC2
+      run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2_ssh_key.pem
+          chmod 400 ec2_ssh_key.pem
+          ssh -i ec2_ssh_key.pem ec2-user@54.183.131.59 "docker pull pas-website && docker run -d -p 80:3000 pas-website"
