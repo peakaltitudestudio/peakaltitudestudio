@@ -17,7 +17,7 @@ jobs:
       run: |
         cd pas-website
         docker build -t ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-        docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR }} ghcr.io
+        docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
         docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
 
     - name: Deploy to AWS EC2
