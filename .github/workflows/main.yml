@@ -20,12 +20,11 @@ jobs:
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         cd terraform
-        terraform destroy
         terraform init
+        # terraform destroy -auto-approve
         terraform apply -auto-approve
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
-        rm -rf .terraform
 
     # - name: Set up Docker
     #   run: |
