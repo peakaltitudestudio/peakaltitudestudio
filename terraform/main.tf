@@ -10,6 +10,16 @@ resource "aws_instance" "pas-website-ec2-instance" {
   tags = {
     Name = "pas-instance"
   }
+
+  # Install docker
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo yum update -y
+    sudo yum install docker -y
+    sudo service docker start
+    sudo usermod -a -G docker ec2-user
+    sudo systemctl enable docker
+    EOF
 }
 
 resource "aws_security_group" "allow-ssh-security-group" {
