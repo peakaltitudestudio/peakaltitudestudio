@@ -8,7 +8,7 @@ resource "aws_instance" "pas-website-ec2-instance" {
   key_name      = "ec2sshkeypair"    # Replace with your EC2 key pair name
 
   tags = {
-    Name = "pas-instance"
+    Name = "${var.CI_PREFIX}pas-instance"
   }
 
   # Install docker
@@ -22,8 +22,17 @@ resource "aws_instance" "pas-website-ec2-instance" {
     EOF
 }
 
+output "public_ip" {
+  value = aws_instance.pas-website-ec2-instance.public_ip
+}
+
+variable "CI_PREFIX" {
+  type        = string
+  default     = ""
+}
+
 resource "aws_security_group" "allow-ssh-security-group" {
-  name = "allow-ssh"
+  name_prefix = var.CI_PREFIX
 
   ingress {
     cidr_blocks = [
@@ -36,7 +45,7 @@ resource "aws_security_group" "allow-ssh-security-group" {
 }
 
 resource "aws_security_group" "allow-app-port-security-group" {
-  name = "allow-app-port"
+  name_prefix = var.CI_PREFIX
 
   ingress {
     from_port   = 3000

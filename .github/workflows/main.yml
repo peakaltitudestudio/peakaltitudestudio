@@ -14,12 +14,16 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Configure AWS and Run Terraform
+      env:
+        CI: "ci-"
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         cd terraform
         terraform init
         terraform apply -auto-approve
+        public_ip=$(terraform output -json public_ip | tr -d '"')
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
         rm -rf .terraform
 
     # - name: Set up Docker
@@ -40,7 +44,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no \
           -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
           -i ec2sshkeypair.pem \
-          ec2-user@18.144.54.243
+          ec2-user@$PUBLIC_IP
           container_id=$(docker ps -q)
           if [ -n "$container_id" ]; then
             docker kill $container_id
