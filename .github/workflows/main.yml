@@ -37,6 +37,7 @@ jobs:
           ec2-user@18.144.54.243 <<EOF
           if docker ps -q; then
             container_id=$(docker ps -q)
+            echo $container_id
             docker kill $container_id || true
           fi
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
