@@ -36,6 +36,7 @@ jobs:
           -i ec2sshkeypair.pem \
           ec2-user@18.144.54.243 <<EOF
           container_id=$(docker ps -q)
+          docker ps -q
           echo $container_id
           if [ -n "$container_id" ]; then
             echo "Inside if"
