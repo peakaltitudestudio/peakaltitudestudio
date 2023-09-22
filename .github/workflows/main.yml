@@ -21,7 +21,10 @@ jobs:
     #     docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
 
     - name: Create known_hosts file
-      run: touch /home/runner/.ssh/known_hosts
+      run: |
+        ls
+        mkdir -p /home/runner/.ssh
+        touch /home/runner/.ssh/known_hosts
 
 
     - name: Deploy to AWS EC2
