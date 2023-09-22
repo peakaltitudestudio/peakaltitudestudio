@@ -35,7 +35,9 @@ jobs:
           -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
           -i ec2sshkeypair.pem \
           ec2-user@18.144.54.243 \
-          "docker ps -q && \
+          if docker ps -q; then \
+            docker kill  $(docker ps -q) || true; \
+          fi; \
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io && \
           docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && \
           docker run -d  -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc"
