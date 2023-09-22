@@ -29,7 +29,7 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        mkdir -p /home/runner/.ssh
-        touch /home/runner/.ssh/known_hosts
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2sshkeypair.pem
+        chmod 400 ec2sshkeypair.pem
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/home/runner/.ssh/known_hosts -i ec2sshkeypair.pem ec2-user@18.144.43.212 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && docker run -d -p 80:3000 pas-website"
       
