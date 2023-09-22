@@ -20,9 +20,13 @@ jobs:
     #     docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
     #     docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
 
+    - name: Create known_hosts file
+      run: touch /home/runner/.ssh/known_hosts
+
+
     - name: Deploy to AWS EC2
       run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2sshkeypair.pem
           chmod 400 ec2sshkeypair.pem
           cat ec2sshkeypair.pem  # Print the content of the key file for debugging
-          ssh -v -i ec2sshkeypair.pem ec2-user@18.144.43.212 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && docker run -d -p 80:3000 pas-website"
+          ssh -v -i ec2sshkeypair.pem ec2-user@18.144.43.212 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && docker run -d -p 80:3000 pas-website"git 
