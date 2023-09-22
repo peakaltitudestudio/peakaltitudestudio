@@ -40,12 +40,12 @@ jobs:
           echo $container_id
           if [ -n "$container_id" ]; then
             echo "Inside if"
-            docker kill $container_id || true
+            docker kill $container_id
           fi
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
           docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
-          'EOF'
+          'EOF'>>
 
 
 
