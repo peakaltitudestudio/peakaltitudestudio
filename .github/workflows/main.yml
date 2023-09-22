@@ -34,17 +34,13 @@ jobs:
         ssh -o StrictHostKeyChecking=no \
           -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
           -i ec2sshkeypair.pem \
-          ec2-user@18.144.54.243
-          container_id=$(docker ps -q)
-          docker ps -q
-          echo $container_id
-          if [ -n "$container_id" ]; then
-            echo "Inside if"
-            docker kill $container_id
-          fi
-          docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-          docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-          docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
+          ec2-user@18.144.54.243 "container_id=$(docker ps -q) && \
+            if [ -n "$container_id" ]; then \
+              docker kill $container_id \
+            fi && \
+            docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io && \
+            docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && \
+            docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc"
 
 
 
