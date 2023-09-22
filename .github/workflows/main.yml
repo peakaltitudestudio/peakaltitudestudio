@@ -36,7 +36,8 @@ jobs:
           -i ec2sshkeypair.pem \
           ec2-user@18.144.54.243 <<EOF
           if docker ps -q; then
-            docker kill $(docker ps -q) || true
+            container_id=docker ps -q
+            docker kill $container_id || true
           fi
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
