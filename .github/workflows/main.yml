@@ -36,7 +36,9 @@ jobs:
           -i ec2sshkeypair.pem \
           ec2-user@18.144.54.243 <<EOF
           container_id=$(docker ps -q)
-            if [ -n "$container_id" ]; then
+          echo $container_id
+          if [ -n "$container_id" ]; then
+            echo "Inside if"
             docker kill $container_id || true
           fi
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
