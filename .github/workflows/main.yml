@@ -13,51 +13,30 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # - name: Configure AWS and Run Terraform
-    #   env:
-    #     TF_VAR_CI_PREFIX: "ci-"
-    #   run: |
-    #     aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     cd terraform
-    #     terraform init
-    #     # terraform destroy -auto-approve
-    #     terraform apply -auto-approve
-    #     public_ip=$(terraform output -json public_ip | tr -d '"')
-    #     echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
+    - name: Configure AWS and Run Terraform
+      env:
+        TF_VAR_CI_PREFIX: "ci-"
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        cd terraform
+        terraform init
+        # terraform destroy -auto-approve
+        terraform apply -auto-approve
+        public_ip=$(terraform output -json public_ip | tr -d '"')
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
 
-    # - name: Set up Docker
-    #   run: |
-    #     cd pas-website
-    #     docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-    #     docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-    #     docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-
-        
-    # - name: Deploy to AWS EC2
-    #   run: |
-    #     ls
-    #     mkdir -p /home/runner/.ssh
-    #     touch /home/runner/.ssh/known_hosts
-    #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2sshkeypair.pem
-    #     chmod 400 ec2sshkeypair.pem
-    #     ssh -o StrictHostKeyChecking=no \
-    #       -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
-    #       -i ec2sshkeypair.pem \
-    #       ec2-user@3.101.64.220
-    #       container_id=$(docker ps -q)
-    #       if [ -n "$container_id" ]; then
-    #         docker kill $container_id
-    #       fi
-    #       docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-    #       docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-    #       docker images
-    #       docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
+    - name: Set up Docker
+      run: |
+        cd pas-website
+        docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
+        docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
+        docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
 
     - name: Deploy to EC2 Instance
       uses: appleboy/ssh-action@master
       with:
-        host: "3.101.64.220"
+        host: $PUBLIC_IP
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         stript_stop: true
