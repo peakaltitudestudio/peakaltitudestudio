@@ -32,7 +32,7 @@ variable "CI_PREFIX" {
 }
 
 resource "aws_security_group" "allow-ssh-security-group" {
-  name_prefix = var.CI_PREFIX
+  name = "${var.CI_PREFIX}allow-ssh"
 
   ingress {
     cidr_blocks = [
@@ -45,7 +45,7 @@ resource "aws_security_group" "allow-ssh-security-group" {
 }
 
 resource "aws_security_group" "allow-app-port-security-group" {
-  name_prefix = var.CI_PREFIX
+  name = "${var.CI_PREFIX}allow-app-port"
 
   ingress {
     from_port   = 3000
