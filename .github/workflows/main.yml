@@ -34,7 +34,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no \
           -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
           -i ec2sshkeypair.pem \
-          ec2-user@18.144.54.243 <<'EOF'
+          ec2-user@18.144.54.243
           container_id=$(docker ps -q)
           docker ps -q
           echo $container_id
