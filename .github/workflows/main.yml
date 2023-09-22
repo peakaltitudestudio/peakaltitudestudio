@@ -34,5 +34,5 @@ jobs:
         ssh -o StrictHostKeyChecking=no \
           -o UserKnownHostsFile=/home/runner/.ssh/known_hosts \
           -i ec2sshkeypair.pem \
-          ec2-user@54.177.144.253 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && \
+          ec2-user@18.144.54.243 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && \
           docker run -d -p 80:3000 pas-website"
