@@ -22,6 +22,6 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2_ssh_key.pem
-          chmod 400 ec2_ssh_key.pem
-          ssh -i ec2_ssh_key.pem ec2-user@54.183.131.59 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && docker run -d -p 80:3000 pas-website"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ec2sshkeypair.pem
+          chmod 400 ec2sshkeypair.pem
+          ssh -i ec2sshkeypair.pem ec2-user@18.144.43.212 "docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest && docker run -d -p 80:3000 pas-website"
