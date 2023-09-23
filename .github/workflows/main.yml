@@ -20,9 +20,12 @@ jobs:
 
     - name: Setup Terraform State Backend
       run: |
-        cd terraform/pipeline-tf-setup
-        terraform init
-        terraform apply -auto-approve
+        # cd terraform/pipeline-tf-create-bucket
+        # terraform init
+        # terraform apply -auto-approve
+        # cd ..
+        cd terraform
+        mv ./pipeline-tf-backend/backend.tf ./backend.tf
 
     - name: Run Main Terraform
       env:
