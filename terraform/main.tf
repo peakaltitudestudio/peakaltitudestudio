@@ -12,12 +12,11 @@ resource "aws_acm_certificate" "pas-acm-cert" {
   validation_method = "DNS"
 }
 
-output "acm_dns_validation_cname" {
-  value = aws_acm_certificate.pas-acm-cert.domain_validation_options[0].resource_record_name
-}
-
-output "acm_dns_validation_value" {
-  value = aws_acm_certificate.pas-acm-cert.domain_validation_options[0].resource_record_value
+output "acm_dns_validation" {
+  value = {
+    for option in aws_acm_certificate.pas-acm-cert.domain_validation_options :
+    option.resource_record_name => option.resource_record_value
+  }
 }
 
 resource "aws_instance" "pas-website-ec2-instance" {

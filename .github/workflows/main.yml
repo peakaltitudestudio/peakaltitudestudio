@@ -44,9 +44,13 @@ jobs:
         terraform apply -auto-approve
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
-        acm_dns_validation_cname=$(terraform output -json acm_dns_validation_cname | tr -d '"')
+        # Get the JSON output from Terraform and assign it to a variable
+        json_output=$(terraform output -json "acm_dns_validation")
+
+        # Use jq to extract the key and value
+        acm_dns_validation_cname=$(echo "$json_output" | sed -n 's/{"\([^"]*\)":.*/\1/p')
         echo "DNS_CNAME=$acm_dns_validation_cname" >> $GITHUB_ENV
-        acm_dns_validation_value=$(terraform output -json acm_dns_validation_value | tr -d '"')
+        acm_dns_validation_value=$(echo "$json_output" | sed -n 's/.*"\(.*\)".*/\1/p')
         echo "DNS_VALUE=$acm_dns_validation_value" >> $GITHUB_ENV
     
     - name: Server Details
