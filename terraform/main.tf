@@ -2,6 +2,20 @@ provider "aws" {
   region = "us-west-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-storage"
+    key            = "state-storage/terraform.tfstate"
+    region         = "us-west-1"
+    encrypt        = true
+  }
+}
+
+variable "CI_PREFIX" {
+  type        = string
+  default     = ""
+}
+
 resource "aws_instance" "pas-website-ec2-instance" {
   ami           = "ami-073e64e4c237c08ad"  # Replace with your desired AMI
   instance_type = "t2.micro"              # Replace with your desired instance type
@@ -24,11 +38,6 @@ resource "aws_instance" "pas-website-ec2-instance" {
 
 output "public_ip" {
   value = aws_instance.pas-website-ec2-instance.public_ip
-}
-
-variable "CI_PREFIX" {
-  type        = string
-  default     = ""
 }
 
 resource "aws_security_group" "allow-ssh-security-group" {
