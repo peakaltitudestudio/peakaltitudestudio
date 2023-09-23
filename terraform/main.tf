@@ -13,11 +13,11 @@ resource "aws_acm_certificate" "pas-acm-cert" {
 }
 
 output "acm_dns_validation_cname" {
-  value = aws_acm_certificate.example.domain_validation_options[0].resource_record_name
+  value = aws_acm_certificate.pas-acm-cert.domain_validation_options[0].resource_record_name
 }
 
 output "acm_dns_validation_value" {
-  value = aws_acm_certificate.example.domain_validation_options[0].resource_record_value
+  value = aws_acm_certificate.pas-acm-cert.domain_validation_options[0].resource_record_value
 }
 
 resource "aws_instance" "pas-website-ec2-instance" {
