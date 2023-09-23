@@ -20,15 +20,19 @@ jobs:
 
     - name: Setup Terraform State Backend
       run: |
-        if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
-          echo "S3 bucket already exists."
-        fi
-        # cd terraform/pipeline-tf-create-bucket
-        # terraform init
-        # terraform apply -auto-approve
-        # cd ..
-        # 
+        aws_region="us-west-1"
+        s3_bucket_name="tf-ci-state-storage-bucket"
+
         cd terraform
+        # 2>/dev/null keeps it from erroring and continues execution
+        if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
+          echo "S3 bucket already exists, skipping bucket creation."
+        else
+          cd pipeline-tf-create-bucket
+          terraform init
+          terraform apply -auto-approve
+          cd ..
+        fi
         mv ./pipeline-tf-backend/backend.tf ./backend.tf
 
     - name: Run Main Terraform
