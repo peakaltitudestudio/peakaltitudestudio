@@ -23,8 +23,7 @@ jobs:
         terraform init
         # terraform destroy -auto-approve
         terraform apply -auto-approve
-        public_ip=$(terraform output -json public_ip | tr -d '"')
-        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
+        echo "PUBLIC_IP=$(terraform output -json public_ip)" >> $GITHUB_ENV
 
     - name: Set up Docker
       run: |
@@ -36,7 +35,7 @@ jobs:
     - name: Deploy to EC2 Instance
       uses: appleboy/ssh-action@master
       with:
-        host: $PUBLIC_IP
+        host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         stript_stop: true
@@ -46,6 +45,11 @@ jobs:
           if [ -n "$container_id" ]; then
             docker kill $container_id
           fi
+          echo 
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
           docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
+
+    - name: Destroy Terraform
+      run: |
+        terraform destroy -auto-approve
