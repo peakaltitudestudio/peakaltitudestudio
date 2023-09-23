@@ -15,7 +15,7 @@ jobs:
 
     - name: Configure AWS and Run Terraform
       env:
-        TF_VAR_CI_PREFIX: "ci-"
+        TF_VAR_CI_PREFIX: "ci2-"
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -23,6 +23,7 @@ jobs:
         terraform init
         # terraform destroy -auto-approve
         terraform apply -auto-approve
+        public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
 
     - name: Set up Docker
