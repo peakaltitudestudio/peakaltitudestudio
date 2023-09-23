@@ -7,6 +7,19 @@ variable "PREFIX" {
   default     = ""
 }
 
+resource "aws_acm_certificate" "pas-acm-cert" {
+  domain_name       = "peakaltitudestudio.com"
+  validation_method = "DNS"
+}
+
+output "acm_dns_validation_cname" {
+  value = aws_acm_certificate.example.domain_validation_options[0].resource_record_name
+}
+
+output "acm_dns_validation_value" {
+  value = aws_acm_certificate.example.domain_validation_options[0].resource_record_value
+}
+
 resource "aws_instance" "pas-website-ec2-instance" {
   ami           = "ami-073e64e4c237c08ad"
   instance_type = "t2.micro"
