@@ -2,27 +2,18 @@ provider "aws" {
   region = "us-west-1"
 }
 
-terraform {
-  backend "s3" {
-    bucket         = "terraform-state-storage"
-    key            = "state-storage/terraform.tfstate"
-    region         = "us-west-1"
-    encrypt        = true
-  }
-}
-
-variable "CI_PREFIX" {
+variable "PREFIX" {
   type        = string
   default     = ""
 }
 
 resource "aws_instance" "pas-website-ec2-instance" {
-  ami           = "ami-073e64e4c237c08ad"  # Replace with your desired AMI
-  instance_type = "t2.micro"              # Replace with your desired instance type
-  key_name      = "ec2sshkeypair"    # Replace with your EC2 key pair name
+  ami           = "ami-073e64e4c237c08ad"
+  instance_type = "t2.micro"
+  key_name      = "ec2sshkeypair"
 
   tags = {
-    Name = "${var.CI_PREFIX}pas-instance"
+    Name = "${var.PREFIX}pas-instance"
   }
 
   # Install docker
@@ -41,7 +32,7 @@ output "public_ip" {
 }
 
 resource "aws_security_group" "allow-ssh-security-group" {
-  name = "${var.CI_PREFIX}allow-ssh"
+  name = "${var.PREFIX}allow-ssh"
 
   ingress {
     cidr_blocks = [
@@ -54,7 +45,7 @@ resource "aws_security_group" "allow-ssh-security-group" {
 }
 
 resource "aws_security_group" "allow-app-port-security-group" {
-  name = "${var.CI_PREFIX}allow-app-port"
+  name = "${var.PREFIX}allow-app-port"
 
   ingress {
     from_port   = 3000
