@@ -13,29 +13,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configure AWS and Run Terraform
-      env:
-        TF_VAR_CI_PREFIX: "ci-"
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        cd terraform
-        terraform init
-        # terraform destroy -auto-approve
-        terraform apply -auto-approve
-        echo "PUBLIC_IP=$(terraform output -json public_ip)" >> $GITHUB_ENV
+    # - name: Configure AWS and Run Terraform
+    #   env:
+    #     TF_VAR_CI_PREFIX: "ci-"
+    #   run: |
+    #     aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     cd terraform
+    #     terraform init
+    #     # terraform destroy -auto-approve
+    #     terraform apply -auto-approve
+    #     echo "PUBLIC_IP=$(terraform output -json public_ip)" >> $GITHUB_ENV
 
-    - name: Set up Docker
-      run: |
-        cd pas-website
-        docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-        docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-        docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
+    # - name: Set up Docker
+    #   run: |
+    #     cd pas-website
+    #     docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
+    #     docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
+    #     docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
 
     - name: Deploy to EC2 Instance
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ env.PUBLIC_IP }}
+        host: "54.219.164.156
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         stript_stop: true
