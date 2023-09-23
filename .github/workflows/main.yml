@@ -35,7 +35,7 @@ jobs:
     - name: Deploy to EC2 Instance
       uses: appleboy/ssh-action@master
       with:
-        host: "54.219.164.156
+        host: "54.219.164.156"
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         stript_stop: true
