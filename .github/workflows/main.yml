@@ -24,6 +24,7 @@ jobs:
         # terraform init
         # terraform apply -auto-approve
         # cd ..
+        # aws s3api head-bucket --bucket "tf-state-storage-bucket" --region "us-west-1"
         cd terraform
         mv ./pipeline-tf-backend/backend.tf ./backend.tf
 
