@@ -19,10 +19,49 @@ output "acm_dns_validation" {
   }
 }
 
+resource "aws_vpc" "pas-vpc" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_internet_gateway" "pas-internet-gateway" {
+  vpc_id = aws_vpc.pas-vpc.id
+}
+
+resource "aws_subnet" "pac-vpc-subnet" {
+  vpc_id                  = aws_vpc.pas-vpc.id
+  cidr_block              = "10.0.0.0/24"
+  availability_zone       = "us-west-1a"
+  map_public_ip_on_launch = true
+}
+
+data "aws_subnet" "pac-vpc-subnet" {
+  id = aws_subnet.pac-vpc-subnet.id
+}
+
+resource "aws_route53_zone" "pas-zone" {
+  name = "peakaltitudestudio.com"
+  comment = "DNS zone for peakaltitudestudio.com"
+}
+
+resource "aws_route53_record" "pas-record" {
+  zone_id = aws_route53_zone.pas-zone.zone_id
+  name    = "peakaltitudestudio.com"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_eip.elastic-ip.public_ip]
+  depends_on = [aws_route53_zone.pas-zone]
+}
+
 resource "aws_instance" "pas-website-ec2-instance" {
   ami           = "ami-073e64e4c237c08ad"
   instance_type = "t2.micro"
   key_name      = "ec2sshkeypair"
+  subnet_id     = data.aws_subnet.pac-vpc-subnet.id
+
+  vpc_security_group_ids = [
+    aws_security_group.allow-ssh-security-group.id,
+    aws_security_group.allow-app-port-security-group.id
+  ]
 
   tags = {
     Name = "${var.PREFIX}pas-instance"
@@ -36,15 +75,28 @@ resource "aws_instance" "pas-website-ec2-instance" {
     sudo service docker start
     sudo usermod -a -G docker ec2-user
     sudo systemctl enable docker
+
+    sudo yum install nginx  -y
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
     EOF
+}
+
+resource "aws_eip" "elastic-ip" {
+  instance = aws_instance.pas-website-ec2-instance.id
 }
 
 output "public_ip" {
   value = aws_instance.pas-website-ec2-instance.public_ip
 }
 
+output "elastic-ip" {
+  value = aws_eip.elastic-ip.instance
+}
+
 resource "aws_security_group" "allow-ssh-security-group" {
   name = "${var.PREFIX}allow-ssh"
+  vpc_id = aws_vpc.pas-vpc.id
 
   ingress {
     cidr_blocks = [
@@ -58,6 +110,7 @@ resource "aws_security_group" "allow-ssh-security-group" {
 
 resource "aws_security_group" "allow-app-port-security-group" {
   name = "${var.PREFIX}allow-app-port"
+  vpc_id = aws_vpc.pas-vpc.id
 
   ingress {
     from_port   = 3000
@@ -65,14 +118,4 @@ resource "aws_security_group" "allow-app-port-security-group" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
-
-resource "aws_network_interface_sg_attachment" "security-group-attachment-ssh" {
-  security_group_id    = "${aws_security_group.allow-ssh-security-group.id}"
-  network_interface_id = "${aws_instance.pas-website-ec2-instance.primary_network_interface_id}"
-}
-
-resource "aws_network_interface_sg_attachment" "security-group-attachment-app-port" {
-  security_group_id    = "${aws_security_group.allow-app-port-security-group.id}"
-  network_interface_id = "${aws_instance.pas-website-ec2-instance.primary_network_interface_id}"
 }

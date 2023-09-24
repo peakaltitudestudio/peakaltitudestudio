@@ -3,3 +3,5 @@ terraform/.terraform/
 terraform/terraform.tfstate*
 terraform/pipeline-tf-setup/.terraform/
 terraform/pipeline-tf-setup/terraform.tfstate*
+*bash_test*
+*google-ad-tag*
