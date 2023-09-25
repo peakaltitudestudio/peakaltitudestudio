@@ -13,6 +13,8 @@ jobs:
         uses: actions/checkout@v2
   
       - name: Terraform Destroy
+        env:
+          TF_VAR_PREFIX: "ci-"
         run: |
           cd terraform
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
