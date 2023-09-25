@@ -8,13 +8,16 @@ on:
 jobs:
   terraform-destroy:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+  
       - name: Terraform Destroy
         run: |
+          cd terraform
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          terraform destory
+          terraform destroy
 
   build-and-deploy:
     runs-on: ubuntu-latest
