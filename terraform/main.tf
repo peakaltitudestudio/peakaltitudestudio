@@ -19,24 +19,24 @@ output "acm_dns_validation" {
   }
 }
 
-resource "aws_vpc" "pas-vpc" {
-  cidr_block = "10.0.0.0/16"
-}
+# resource "aws_vpc" "pas-vpc" {
+#   cidr_block = "10.0.0.0/16"
+# }
 
-resource "aws_internet_gateway" "pas-internet-gateway" {
-  vpc_id = aws_vpc.pas-vpc.id
-}
+# resource "aws_internet_gateway" "pas-internet-gateway" {
+#   vpc_id = aws_vpc.pas-vpc.id
+# }
 
-resource "aws_subnet" "pac-vpc-subnet" {
-  vpc_id                  = aws_vpc.pas-vpc.id
-  cidr_block              = "10.0.0.0/24"
-  availability_zone       = "us-west-1a"
-  map_public_ip_on_launch = true
-}
+# resource "aws_subnet" "pac-vpc-subnet" {
+#   vpc_id                  = aws_vpc.pas-vpc.id
+#   cidr_block              = "10.0.0.0/24"
+#   availability_zone       = "us-west-1a"
+#   map_public_ip_on_launch = true
+# }
 
-data "aws_subnet" "pac-vpc-subnet" {
-  id = aws_subnet.pac-vpc-subnet.id
-}
+# data "aws_subnet" "pac-vpc-subnet" {
+#   id = aws_subnet.pac-vpc-subnet.id
+# }
 
 resource "aws_route53_zone" "pas-zone" {
   name = "peakaltitudestudio.com"
@@ -56,7 +56,7 @@ resource "aws_instance" "pas-website-ec2-instance" {
   ami           = "ami-073e64e4c237c08ad"
   instance_type = "t2.micro"
   key_name      = "ec2sshkeypair"
-  subnet_id     = data.aws_subnet.pac-vpc-subnet.id
+  subnet_id     = "subnet-0a0cc0c37d9ff6214"
 
   vpc_security_group_ids = [
     aws_security_group.allow-ssh-security-group.id,
@@ -96,12 +96,10 @@ output "elastic-ip" {
 
 resource "aws_security_group" "allow-ssh-security-group" {
   name = "${var.PREFIX}allow-ssh"
-  vpc_id = aws_vpc.pas-vpc.id
+  vpc_id = "vpc-0782912bff4064977"
 
   ingress {
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
+    cidr_blocks = ["0.0.0.0/0"]
     from_port = 22
     to_port = 22
     protocol = "tcp"
@@ -110,11 +108,23 @@ resource "aws_security_group" "allow-ssh-security-group" {
 
 resource "aws_security_group" "allow-app-port-security-group" {
   name = "${var.PREFIX}allow-app-port"
-  vpc_id = aws_vpc.pas-vpc.id
+  vpc_id = "vpc-0782912bff4064977"
 
   ingress {
     from_port   = 3000
     to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "http-security-group" {
+  name = "${var.PREFIX}allow-http"
+  vpc_id = "vpc-0782912bff4064977"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
