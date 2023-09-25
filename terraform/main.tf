@@ -75,7 +75,6 @@ resource "aws_instance" "pas-website-ec2-instance" {
     sudo service docker start
     sudo usermod -a -G docker ec2-user
     sudo systemctl enable docker
-
     sudo yum install nginx  -y
     sudo systemctl start nginx
     sudo systemctl enable nginx
