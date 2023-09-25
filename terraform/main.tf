@@ -67,7 +67,7 @@ resource "aws_instance" "pas-website-ec2-instance" {
     Name = "${var.PREFIX}pas-instance"
   }
 
-  # Install docker
+  # Install docker and nginix
   user_data = <<-EOF
     #!/bin/bash
     sudo yum update -y
