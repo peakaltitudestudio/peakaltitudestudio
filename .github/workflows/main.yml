@@ -21,7 +21,7 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           terraform init
           terraform apply -auto-approve
-          terraform destroy
+          terraform destroy -auto-approve
 
   build-and-deploy:
     runs-on: ubuntu-latest
