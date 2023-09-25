@@ -60,7 +60,9 @@ resource "aws_instance" "pas-website-ec2-instance" {
 
   vpc_security_group_ids = [
     aws_security_group.allow-ssh-security-group.id,
-    aws_security_group.allow-app-port-security-group.id
+    aws_security_group.allow-app-port-security-group.id,
+    aws_security_group.allow-http-security-group.id,
+    "sg-03ae4b8c506121cb1"
   ]
 
   tags = {
@@ -117,7 +119,7 @@ resource "aws_security_group" "allow-app-port-security-group" {
   }
 }
 
-resource "aws_security_group" "http-security-group" {
+resource "aws_security_group" "allow-http-security-group" {
   name = "${var.PREFIX}allow-http"
   vpc_id = "vpc-0782912bff4064977"
 

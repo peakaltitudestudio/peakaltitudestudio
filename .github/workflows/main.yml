@@ -41,7 +41,9 @@ jobs:
       run: |
         cd terraform
         terraform init
+        terraform refresh
         terraform apply -auto-approve
+        terraform refresh
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
         # Get the JSON output from Terraform and assign it to a variable
