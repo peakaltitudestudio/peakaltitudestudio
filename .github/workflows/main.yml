@@ -101,4 +101,5 @@ jobs:
         script_stop: true
         script: |
           set -e
+          sudo certbot certonly --nginx -n --agree-tos --email adamlarson@peakaltitudestudio.com -d peakaltitudestudio.com -d www.peakaltitudestudio.com
           sudo systemctl reload nginx
