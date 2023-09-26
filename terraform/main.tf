@@ -43,6 +43,7 @@ resource "aws_instance" "pas-website-ec2-instance" {
     aws_security_group.allow-ssh-security-group.id,
     aws_security_group.allow-app-port-security-group.id,
     aws_security_group.allow-http-security-group.id,
+    aws_security_group.allow-https-security-group.id,
     "sg-03ae4b8c506121cb1"
   ]
 
@@ -68,7 +69,6 @@ resource "aws_instance" "pas-website-ec2-instance" {
     sudo yum-config-manager --enable epel
     sudo yum install certbot python3-certbot-nginx
     sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
-    sudo certbot --nginx
     EOF
 }
 
