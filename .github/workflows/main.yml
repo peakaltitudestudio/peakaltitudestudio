@@ -41,15 +41,11 @@ jobs:
       run: |
         cd terraform
         terraform init
-        terraform refresh
         terraform apply -auto-approve
-        terraform refresh
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
         # Get the JSON output from Terraform and assign it to a variable
         json_output=$(terraform output -json "acm_dns_validation")
-
-        # Use jq to extract the key and value
         acm_dns_validation_cname=$(echo "$json_output" | sed -n 's/{"\([^"]*\)":.*/\1/p')
         echo "DNS_CNAME=$acm_dns_validation_cname" >> $GITHUB_ENV
         acm_dns_validation_value=$(echo "$json_output" | sed -n 's/.*"\(.*\)".*/\1/p')
@@ -75,7 +71,7 @@ jobs:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        stript_stop: true
+        script_stop: true
         script: |
           set -e
           container_id=$(docker ps -q)
@@ -93,8 +89,8 @@ jobs:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: nginx-config.conf
-        target: /etc/nginx/conf.d/pas-website.conf      
+        source: peakaltitudestudio-nginx.conf
+        target: /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
@@ -102,7 +98,7 @@ jobs:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        stript_stop: true
+        script_stop: true
         script: |
           set -e
           sudo systemctl reload nginx

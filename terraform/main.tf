@@ -19,25 +19,6 @@ output "acm_dns_validation" {
   }
 }
 
-# resource "aws_vpc" "pas-vpc" {
-#   cidr_block = "10.0.0.0/16"
-# }
-
-# resource "aws_internet_gateway" "pas-internet-gateway" {
-#   vpc_id = aws_vpc.pas-vpc.id
-# }
-
-# resource "aws_subnet" "pac-vpc-subnet" {
-#   vpc_id                  = aws_vpc.pas-vpc.id
-#   cidr_block              = "10.0.0.0/24"
-#   availability_zone       = "us-west-1a"
-#   map_public_ip_on_launch = true
-# }
-
-# data "aws_subnet" "pac-vpc-subnet" {
-#   id = aws_subnet.pac-vpc-subnet.id
-# }
-
 resource "aws_route53_zone" "pas-zone" {
   name = "peakaltitudestudio.com"
   comment = "DNS zone for peakaltitudestudio.com"
@@ -80,6 +61,14 @@ resource "aws_instance" "pas-website-ec2-instance" {
     sudo yum install nginx  -y
     sudo systemctl start nginx
     sudo systemctl enable nginx
+    sudo python3 -m venv /opt/certbot/
+    sudo /opt/certbot/bin/pip install --upgrade pip
+    sudo /opt/certbot/bin/pip install certbot certbot-nginx
+    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    sudo yum-config-manager --enable epel
+    sudo yum install certbot python3-certbot-nginx
+    sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+    sudo certbot --nginx
     EOF
 }
 
@@ -126,6 +115,18 @@ resource "aws_security_group" "allow-http-security-group" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow-https-security-group" {
+  name = "${var.PREFIX}allow-https"
+  vpc_id = "vpc-0782912bff4064977"
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
