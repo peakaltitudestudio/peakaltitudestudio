@@ -18,6 +18,7 @@ jobs:
       run: |
         public_ip=$(cat ${{ github.workspace }}/public-ip-artifact)
         echo "The public IP address is: $public_ip"
+    
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
