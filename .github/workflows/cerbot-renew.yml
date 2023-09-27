@@ -9,6 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Download Public IP Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: ip-artifact
+
+    - name: Store Public IP as ENV
+      run: |
+        public_ip=$(cat ip_address.txt)
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
+        
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
       with:
