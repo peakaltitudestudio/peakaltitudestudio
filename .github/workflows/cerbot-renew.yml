@@ -12,13 +12,13 @@ jobs:
     - name: Download Public IP Artifact
       uses: actions/download-artifact@v2
       with:
-        name: ip-artifact
-
-    - name: Store Public IP as ENV
+        name: public-ip-artifact
+    
+    - name: Extract IP address from artifact
       run: |
-        public_ip=$(cat ip_address.txt)
-        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
-        
+        public_ip=$(cat ${{ github.workspace }}/public-ip-artifact)
+        echo "The public IP address is: $public_ip"
+
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
       with:
@@ -29,3 +29,5 @@ jobs:
         script: |
           set -e
           sudo certbot renew
+
+          

@@ -44,36 +44,34 @@ jobs:
         terraform apply -auto-approve
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
-        echo $public_ip > public_ip.txt
+        # Get the JSON output from Terraform and assign it to a variable
         json_output=$(terraform output -json "acm_dns_validation")
         acm_dns_validation_cname=$(echo "$json_output" | sed -n 's/{"\([^"]*\)":.*/\1/p')
         echo "DNS_CNAME=$acm_dns_validation_cname" >> $GITHUB_ENV
         acm_dns_validation_value=$(echo "$json_output" | sed -n 's/.*"\(.*\)".*/\1/p')
         echo "DNS_VALUE=$acm_dns_validation_value" >> $GITHUB_ENV
-
-    - name: Upload IP Address Artifact
-      uses: actions/upload-artifact@v2
-      with:
-          name: ip-artifact
-          path: public_ip.txt
-
-    - name: Download IP Address Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: ip-artifact
-
-    - name: Use IP Address
-      run: |
-        public_ip=$(cat ip_address.txt)
-        echo "TEST_IP=$public_ip" >> $GITHUB_ENV
-        echo "TEST_IP IS ${{ env.TEST_IP }}"
-
+    
     - name: Server Details
       run: |
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
         echo "DNS Validation CNAME Is: ${{ env.DNS_CNAME }}"
         echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
 
+    - name: Save Public IP as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ip-address-artifact
+        path: $GITHUB_ENV
+    
+    - name: Download Public IP Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: public-ip-artifact
+      
+    - name: Extract IP address from artifact
+      run: |
+        public_ip=$(cat ${{ github.workspace }}/public-ip-artifact)
+        echo "The public IP address is: $public_ip"
     
     - name: Set up Docker
       run: |
