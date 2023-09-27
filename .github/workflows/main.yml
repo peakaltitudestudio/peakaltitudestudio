@@ -57,21 +57,25 @@ jobs:
         echo "DNS Validation CNAME Is: ${{ env.DNS_CNAME }}"
         echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
 
+
+    - name: Save PUBLIC_IP to a file
+      run: echo "${PUBLIC_IP}" > public_ip.txt
+
     - name: Save Public IP as Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: public-ip-artifact
-        path: $GITHUB_ENV
+        name: ip-artifact
+        path: public_ip.txt
     
     - name: Download Public IP Artifact
       uses: actions/download-artifact@v2
       with:
-        name: public-ip-artifact
+        name: ip-artifact
       
     - name: Extract IP address from artifact
       run: |
-        public_ip=$(cat ${{ github.workspace }}/public-ip-artifact)
-        echo "The public IP address is: $public_ip"
+        test_ip=$(cat ip-artifact/public_ip.txt)
+        echo "The public IP address is: $test_ip"
     
     - name: Set up Docker
       run: |
