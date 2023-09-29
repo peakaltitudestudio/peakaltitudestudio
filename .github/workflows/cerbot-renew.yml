@@ -10,15 +10,14 @@ jobs:
 
     steps:
     - name: Download Public IP Artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: public-ip-artifact
-    
+        name: ip-artifact
+      
     - name: Extract IP address from artifact
       run: |
-        public_ip=$(cat ${{ github.workspace }}/public-ip-artifact)
-        echo "The public IP address is: $public_ip"
-    
+        public_ip=$(cat public_ip.txt)
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master

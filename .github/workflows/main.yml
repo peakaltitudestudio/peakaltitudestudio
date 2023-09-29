@@ -66,19 +66,7 @@ jobs:
       with:
         name: ip-artifact
         path: public_ip.txt
-    
-    - name: Download Public IP Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: ip-artifact
-      
-    - name: Extract IP address from artifact
-      run: |
-        ls /home/runner/work/
-        cat public_ip.txt
-        test_ip=$(cat public_ip.txt)
-        echo "The public IP address is: $test_ip"
-    
+
     - name: Set up Docker
       run: |
         cd pas-website
