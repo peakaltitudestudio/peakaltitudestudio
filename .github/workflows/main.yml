@@ -82,10 +82,13 @@ jobs:
         script_stop: true
         script: |
           set -e
-          container_ids=$(docker ps -qa)
-          if [ -n "$container_ids" ]; then
-            docker kill $container_ids
-            docker rm $container_ids
+          running_ids=$(docker ps -q)
+          if [ -n "$running_ids" ]; then
+            docker kill $running_ids
+          fi
+          all_ids=$(docker ps -qa)
+          if [ -n "$all_ids" ]; then
+            docker rm $all_ids
           fi
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
