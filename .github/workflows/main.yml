@@ -83,7 +83,7 @@ jobs:
         script: |
           set -e
           container_ids=$(docker ps -qa)
-          if [ -n "$container_id" ]; then
+          if [ -n "$container_ids" ]; then
             docker kill $container_ids
             docker rm $container_ids
           fi
