@@ -58,13 +58,7 @@ jobs:
         echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
 
     - name: Save PUBLIC_IP to a file
-      run: echo "${PUBLIC_IP}" > public_ip.txt
-
-    - name: Save Public IP as Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ip-artifact
-        path: public_ip.txt
+      run: echo "${PUBLIC_IP}"
 
     - name: Set up Docker
       run: |
@@ -118,3 +112,7 @@ jobs:
           set -e
           sudo certbot certonly --nginx -n --agree-tos --email adamlarson@peakaltitudestudio.com -d peakaltitudestudio.com -d www.peakaltitudestudio.com
           sudo systemctl reload nginx
+
+    # - name: Set a completion flag
+    #   id: completion
+    #   run: echo "Completed Main Workflow"

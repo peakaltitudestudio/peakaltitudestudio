@@ -1,23 +1,24 @@
 name: Certbot Renewal
 
+# on:
+#   schedule:
+#     - cron: '15 4 * * *'
+
 on:
-  schedule:
-    - cron: '15 4 * * *'
+  workflow_run:
+    workflows: ["Deploy to AWS EC2"]
+    types:
+      - completed
 
 jobs:
   renew-ssl-certificates:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download Public IP Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: ip-artifact
-      
     - name: Extract IP address from artifact
       run: |
-        public_ip=$(cat public_ip.txt)
-        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
+        echo $PUB_IP
+        echo "${PUBLIC_IP}"
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
