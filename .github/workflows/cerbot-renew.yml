@@ -17,7 +17,6 @@ jobs:
     steps:
     - name: Extract IP address from artifact
       run: |
-        echo $PUB_IP
         echo "${PUBLIC_IP}"
 
     - name: Setup Nginx Server
