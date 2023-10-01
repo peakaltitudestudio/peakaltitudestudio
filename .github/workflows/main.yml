@@ -57,9 +57,6 @@ jobs:
         echo "DNS Validation CNAME Is: ${{ env.DNS_CNAME }}"
         echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
 
-    - name: Save PUBLIC_IP to a file
-      run: echo "${PUBLIC_IP}"
-
     - name: Set up Docker
       run: |
         cd pas-website

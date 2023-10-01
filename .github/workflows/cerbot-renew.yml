@@ -17,8 +17,8 @@ jobs:
     steps:
     - name: Extract IP address from artifact
       run: |
-        echo $PUB_IP
-        echo "${PUBLIC_IP}"
+        public_ip=54.183.74.234
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
