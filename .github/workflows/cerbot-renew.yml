@@ -1,14 +1,8 @@
 name: Certbot Renewal
 
-# on:
-#   schedule:
-#     - cron: '15 4 * * *'
-
 on:
-  workflow_run:
-    workflows: ["Deploy to AWS EC2"]
-    types:
-      - completed
+  schedule:
+    - cron: '0 7 * * *'
 
 jobs:
   renew-ssl-certificates:
