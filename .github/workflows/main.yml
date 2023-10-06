@@ -38,11 +38,11 @@ jobs:
     - name: Run Main Terraform
       env:
         TF_VAR_PREFIX: "ci-"
-        TF_VAR_environment: "ci-"
+        environment: "ci-"
       run: |
         cd terraform
         terraform init
-        terraform apply -auto-approve
+        terraform apply -auto-approve -var "environment=${{ env.environment }}"
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
         # Get the JSON output from Terraform and assign it to a variable
