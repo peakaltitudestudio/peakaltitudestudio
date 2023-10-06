@@ -37,7 +37,6 @@ jobs:
 
     - name: Run Main Terraform
       env:
-        TF_VAR_PREFIX: "ci-"
         environment: "ci-"
       run: |
         cd terraform
@@ -49,8 +48,6 @@ jobs:
     - name: Server Details
       run: |
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
-        echo "DNS Validation CNAME Is: ${{ env.DNS_CNAME }}"
-        echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
 
     - name: Set up Docker
       run: |
@@ -102,9 +99,4 @@ jobs:
         script_stop: true
         script: |
           set -e
-          sudo certbot certonly --nginx -n --agree-tos --email adamlarson@peakaltitudestudio.com -d peakaltitudestudio.com -d www.peakaltitudestudio.com
           sudo systemctl reload nginx
-
-    # - name: Set a completion flag
-    #   id: completion
-    #   run: echo "Completed Main Workflow"

@@ -1,0 +1,42 @@
+resource "aws_security_group" "allow_ssh_sg" {
+  name = "${local.env}allow-ssh"
+  vpc_id = "vpc-0782912bff4064977"
+
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+  }
+}
+
+resource "aws_security_group" "allow_app_port_sg" {
+  name = "${local.env}allow-app-port"
+  vpc_id = "vpc-0782912bff4064977"
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow_http_and_https_sg" {
+  name = "${local.env}allow-http-and-https"
+  vpc_id = "vpc-0782912bff4064977"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
