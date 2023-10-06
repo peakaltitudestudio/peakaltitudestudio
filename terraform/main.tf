@@ -2,6 +2,13 @@ provider "aws" {
   region = "us-west-1"
 }
 
+variable "environment" {
+  description = "The environment for the subnet (e.g., local, ci)"
+  type        = string
+  default     = ""  # Set a default value here or change it as needed
+}
+
+
 variable "PREFIX" {
   type    = string
   default = ""
@@ -30,11 +37,15 @@ resource "aws_route53_record" "pas-record" {
   depends_on = [aws_route53_zone.pas-zone]
 }
 
+locals {
+  subnet_cidr_block = var.environment == "local" ? "172.31.2.0/24" : "172.31.3.0/24"
+}
+
 resource "aws_subnet" "second-pas-subnet" {
-  vpc_id                  = "vpc-0782912bff4064977"  # Specify your VPC ID
-  cidr_block              = "172.31.2.0/24" # Specify the CIDR block for the subnet
-  availability_zone       = "us-west-1c" # Specify the Availability Zone
-  map_public_ip_on_launch = true         # Specify if instances in this subnet receive public IPs
+  vpc_id                  = "vpc-0782912bff4064977"
+  cidr_block              = local.subnet_cidr_block
+  availability_zone       = "us-west-1c"
+  map_public_ip_on_launch = true
 }
 
 
