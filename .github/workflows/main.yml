@@ -38,6 +38,7 @@ jobs:
     - name: Run Main Terraform
       env:
         TF_VAR_PREFIX: "ci-"
+        TF_VAR_environment: "ci-"
       run: |
         cd terraform
         terraform init
