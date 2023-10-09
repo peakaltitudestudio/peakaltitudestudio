@@ -41,14 +41,14 @@ resource "aws_route53_record" "www_pas_record" {
 }
 
 resource "aws_subnet" "main_pas_subnet" {
-  vpc_id                  = "vpc-0782912bff4064977"
+  vpc_id                  = aws_vpc.pas_main_vpc.id
   cidr_block              = local.main_subnet_cidr_block
-  availability_zone       = "us-west-1c"
+  availability_zone       = "us-west-1a"
   map_public_ip_on_launch = true
 }
 
 resource "aws_subnet" "alt_pas_subnet" {
-  vpc_id                  = "vpc-0782912bff4064977"
+  vpc_id                  = aws_vpc.pas_main_vpc.id
   cidr_block              = local.alt_subnet_cidr_block
   availability_zone       = "us-west-1c"
   map_public_ip_on_launch = true
@@ -59,7 +59,7 @@ resource "aws_instance" "pas_website_ec2_instance" {
   ami           = "ami-073e64e4c237c08ad"
   instance_type = "t2.micro"
   key_name      = "ec2sshkeypair"
-  subnet_id     = "subnet-0a0cc0c37d9ff6214"
+  subnet_id     = aws_subnet.main_pas_subnet.id
 
   vpc_security_group_ids = [
     aws_security_group.allow_ssh_sg.id,
@@ -89,7 +89,7 @@ output "public_ip" {
 }
 
 resource "aws_lb" "pas_elb" {
-  name               = "localpas"
+  name               = "${local.env}-pas"
   internal           = false
   load_balancer_type = "application"
   subnets            = [
@@ -134,10 +134,10 @@ resource "aws_lb_listener" "http_listener_redirect" {
 }
 
 resource "aws_lb_target_group" "pas_target_group" {
-  name        = "${local.env}pas-target-group"
+  name        = "${local.env}-pas-target-group"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = "vpc-0782912bff4064977"
+  vpc_id      = aws_vpc.pas_main_vpc.id
   target_type = "instance"
 }
 

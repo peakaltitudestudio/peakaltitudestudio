@@ -1,6 +1,6 @@
 resource "aws_security_group" "allow_ssh_sg" {
-  name = "${local.env}allow-ssh"
-  vpc_id = "vpc-0782912bff4064977"
+  name = "${local.env}-allow-ssh"
+  vpc_id = aws_vpc.pas_main_vpc.id
 
   ingress {
     cidr_blocks = ["0.0.0.0/0"]
@@ -11,8 +11,8 @@ resource "aws_security_group" "allow_ssh_sg" {
 }
 
 resource "aws_security_group" "allow_app_port_sg" {
-  name = "${local.env}allow-app-port"
-  vpc_id = "vpc-0782912bff4064977"
+  name = "${local.env}-allow-app-port"
+  vpc_id = aws_vpc.pas_main_vpc.id
 
   ingress {
     from_port   = 3000
@@ -23,8 +23,8 @@ resource "aws_security_group" "allow_app_port_sg" {
 }
 
 resource "aws_security_group" "allow_http_and_https_sg" {
-  name = "${local.env}allow-http-and-https"
-  vpc_id = "vpc-0782912bff4064977"
+  name = "${local.env}-allow-http-and-https"
+  vpc_id = aws_vpc.pas_main_vpc.id
 
   ingress {
     from_port   = 80
