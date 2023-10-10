@@ -56,7 +56,7 @@ jobs:
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: ./ec2files/peakaltitudestudio-nginx.conf
-        target: temp/peakaltitudestudio-nginx.conf
+        target: temp/
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
@@ -68,7 +68,7 @@ jobs:
         script: |
           set -e
           sudo ls
-          sudo mv temp/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
+          sudo mv temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
           sudo systemctl reload nginx
 
     - name: Set up Docker
