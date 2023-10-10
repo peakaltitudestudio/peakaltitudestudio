@@ -85,7 +85,7 @@ resource "aws_eip" "elastic_ip" {
 }
 
 output "public_ip" {
-  value = aws_instance.pas_website_ec2_instance.public_ip
+  value = aws_eip.elastic_ip.public_ip
 }
 
 resource "aws_lb" "pas_elb" {
