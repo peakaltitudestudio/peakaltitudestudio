@@ -49,6 +49,29 @@ jobs:
       run: |
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
 
+    - name: Copy Nginx Config
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: peakaltitudestudio-nginx.conf
+        target: temp/peakaltitudestudio-nginx.conf
+        script_stop: true
+
+    - name: Setup Nginx Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          set -e
+          sudo ls
+          sudo mv temp/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
+          sudo systemctl reload nginx
+
     - name: Set up Docker
       run: |
         cd pas-website
@@ -80,26 +103,3 @@ jobs:
           if [ -n "$untagged_images" ]; then
             docker rmi $untagged_images
           fi
-
-    - name: Copy Nginx Config
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.PUBLIC_IP }}
-        username: ec2-user
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: peakaltitudestudio-nginx.conf
-        target: temp/peakaltitudestudio-nginx.conf
-        script_stop: true
-
-    - name: Setup Nginx Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.PUBLIC_IP }}
-        username: ec2-user
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script_stop: true
-        script: |
-          set -e
-          sudo mv temp/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
-          sudo systemctl reload nginx
-          sudo rm -r temp
