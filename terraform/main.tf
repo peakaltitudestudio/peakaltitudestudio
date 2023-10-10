@@ -98,8 +98,9 @@ resource "aws_lb" "pas_elb" {
   ]
 
   enable_deletion_protection = false
-
   enable_http2 = true
+
+  security_groups = [aws_security_group.allow_http_and_https_sg.id]
 }
 
 resource "aws_lb_listener" "https_listener_forward" {
