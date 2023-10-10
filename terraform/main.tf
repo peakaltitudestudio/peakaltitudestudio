@@ -7,17 +7,17 @@ resource "aws_acm_certificate_validation" "pas_cert_validation" {
   certificate_arn = aws_acm_certificate.pas_acm_cert.arn
 }
 
-resource "aws_route53_zone" "pas_zone" {
-  name = "peakaltitudestudio.com"
-  comment = "DNS zone for peakaltitudestudio.com"
-}
 
-output "name_servers" {
-  value = aws_route53_zone.pas_zone.name_servers
+resource "aws_route53_record" "pas_cert_cname_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "${element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_name, 0)}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_value, 0)]
 }
 
 resource "aws_route53_record" "pas_record" {
-  zone_id = aws_route53_zone.pas_zone.zone_id
+  zone_id = var.manually_created_zone_id
   name    = "peakaltitudestudio.com"
   type    = "A"
 
@@ -26,12 +26,10 @@ resource "aws_route53_record" "pas_record" {
     name                    = aws_lb.pas_elb.dns_name
     evaluate_target_health  = true
   }
-
-  depends_on = [aws_route53_zone.pas_zone]
 }
 
 resource "aws_route53_record" "www_pas_record" {
-  zone_id = aws_route53_zone.pas_zone.zone_id
+  zone_id = var.manually_created_zone_id
   name    = "www.peakaltitudestudio.com"
   type    = "A"
 
@@ -40,8 +38,6 @@ resource "aws_route53_record" "www_pas_record" {
     name                    = aws_lb.pas_elb.dns_name
     evaluate_target_health  = true
   }
-
-  depends_on = [aws_route53_zone.pas_zone]
 }
 
 resource "aws_subnet" "main_pas_subnet" {
