@@ -12,6 +12,10 @@ resource "aws_route53_zone" "pas_zone" {
   comment = "DNS zone for peakaltitudestudio.com"
 }
 
+output "name_servers" {
+  value = aws_route53_zone.pas_zone.name_servers
+}
+
 resource "aws_route53_record" "pas_record" {
   zone_id = aws_route53_zone.pas_zone.zone_id
   name    = "peakaltitudestudio.com"
