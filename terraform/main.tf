@@ -1,57 +1,72 @@
-provider "aws" {
-  region = "us-west-1"
-}
-
-variable "PREFIX" {
-  type        = string
-  default     = ""
-}
-
-resource "aws_acm_certificate" "pas-acm-cert" {
+resource "aws_acm_certificate" "pas_acm_cert" {
   domain_name       = "peakaltitudestudio.com"
   validation_method = "DNS"
 }
 
-output "acm_dns_validation" {
-  value = {
-    for option in aws_acm_certificate.pas-acm-cert.domain_validation_options :
-    option.resource_record_name => option.resource_record_value
+resource "aws_acm_certificate_validation" "pas_cert_validation" {
+  certificate_arn = aws_acm_certificate.pas_acm_cert.arn
+}
+
+
+resource "aws_route53_record" "pas_cert_cname_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "${element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_name, 0)}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_value, 0)]
+}
+
+resource "aws_route53_record" "pas_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "peakaltitudestudio.com"
+  type    = "A"
+
+  alias {
+    zone_id                 = aws_lb.pas_elb.zone_id
+    name                    = aws_lb.pas_elb.dns_name
+    evaluate_target_health  = true
   }
 }
 
-resource "aws_route53_zone" "pas-zone" {
-  name = "peakaltitudestudio.com"
-  comment = "DNS zone for peakaltitudestudio.com"
-}
-
-resource "aws_route53_record" "pas-record" {
-  zone_id = aws_route53_zone.pas-zone.zone_id
-  name    = "peakaltitudestudio.com"
+resource "aws_route53_record" "www_pas_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "www.peakaltitudestudio.com"
   type    = "A"
-  ttl     = "300"
-  records = [aws_eip.elastic-ip.public_ip]
-  depends_on = [aws_route53_zone.pas-zone]
+
+  alias {
+    zone_id                 = aws_lb.pas_elb.zone_id
+    name                    = aws_lb.pas_elb.dns_name
+    evaluate_target_health  = true
+  }
 }
 
-resource "aws_instance" "pas-website-ec2-instance" {
+resource "aws_subnet" "main_pas_subnet" {
+  vpc_id                  = aws_vpc.pas_main_vpc.id
+  cidr_block              = local.main_subnet_cidr_block
+  availability_zone       = "us-west-1a"
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "alt_pas_subnet" {
+  vpc_id                  = aws_vpc.pas_main_vpc.id
+  cidr_block              = local.alt_subnet_cidr_block
+  availability_zone       = "us-west-1c"
+  map_public_ip_on_launch = true
+}
+
+
+resource "aws_instance" "pas_website_ec2_instance" {
   ami           = "ami-073e64e4c237c08ad"
   instance_type = "t2.micro"
   key_name      = "ec2sshkeypair"
-  subnet_id     = "subnet-0a0cc0c37d9ff6214"
+  subnet_id     = aws_subnet.main_pas_subnet.id
 
   vpc_security_group_ids = [
-    aws_security_group.allow-ssh-security-group.id,
-    aws_security_group.allow-app-port-security-group.id,
-    aws_security_group.allow-http-security-group.id,
-    aws_security_group.allow-https-security-group.id,
-    "sg-03ae4b8c506121cb1"
+    aws_security_group.allow_ssh_sg.id,
+    aws_security_group.allow_app_port_sg.id,
+    aws_security_group.allow_http_and_https_sg.id
   ]
 
-  tags = {
-    Name = "${var.PREFIX}pas-instance"
-  }
-
-  # Install docker and nginix
   user_data = <<-EOF
     #!/bin/bash
     sudo yum update -y
@@ -59,75 +74,72 @@ resource "aws_instance" "pas-website-ec2-instance" {
     sudo service docker start
     sudo usermod -a -G docker ec2-user
     sudo systemctl enable docker
-    sudo yum install nginx  -y
+    sudo yum install nginx -y
     sudo systemctl start nginx
     sudo systemctl enable nginx
-    sudo python3 -m venv /opt/certbot/
-    sudo /opt/certbot/bin/pip install --upgrade pip
-    sudo /opt/certbot/bin/pip install certbot certbot-nginx
-    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum-config-manager --enable epel
-    sudo yum install certbot python3-certbot-nginx
-    sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
-    EOF
+  EOF
 }
 
-resource "aws_eip" "elastic-ip" {
-  instance = aws_instance.pas-website-ec2-instance.id
+resource "aws_eip" "elastic_ip" {
+  instance = aws_instance.pas_website_ec2_instance.id
 }
 
 output "public_ip" {
-  value = aws_instance.pas-website-ec2-instance.public_ip
+  value = aws_eip.elastic_ip.public_ip
 }
 
-output "elastic-ip" {
-  value = aws_eip.elastic-ip.instance
+resource "aws_lb" "pas_elb" {
+  name               = "${local.env}-pas"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = [
+    aws_subnet.main_pas_subnet.id,
+    aws_subnet.alt_pas_subnet.id
+  ]
+
+  enable_deletion_protection = false
+  enable_http2 = true
+
+  security_groups = [aws_security_group.allow_http_and_https_sg.id]
 }
 
-resource "aws_security_group" "allow-ssh-security-group" {
-  name = "${var.PREFIX}allow-ssh"
-  vpc_id = "vpc-0782912bff4064977"
+resource "aws_lb_listener" "https_listener_forward" {
+  load_balancer_arn = aws_lb.pas_elb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate.pas_acm_cert.arn
 
-  ingress {
-    cidr_blocks = ["0.0.0.0/0"]
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.pas_target_group.arn
   }
 }
 
-resource "aws_security_group" "allow-app-port-security-group" {
-  name = "${var.PREFIX}allow-app-port"
-  vpc_id = "vpc-0782912bff4064977"
+resource "aws_lb_listener" "http_listener_redirect" {
+  load_balancer_arn = aws_lb.pas_elb.arn
+  port              = 80
+  protocol          = "HTTP"
 
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  default_action {
+    type             = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
-resource "aws_security_group" "allow-http-security-group" {
-  name = "${var.PREFIX}allow-http"
-  vpc_id = "vpc-0782912bff4064977"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_lb_target_group" "pas_target_group" {
+  name        = "${local.env}-pas-target-group"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.pas_main_vpc.id
+  target_type = "instance"
 }
 
-resource "aws_security_group" "allow-https-security-group" {
-  name = "${var.PREFIX}allow-https"
-  vpc_id = "vpc-0782912bff4064977"
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_lb_target_group_attachment" "pas-target-group-attachment" {
+  target_group_arn = aws_lb_target_group.pas_target_group.arn
+  target_id         = aws_instance.pas_website_ec2_instance.id
 }

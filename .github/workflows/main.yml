@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - main
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -37,25 +37,38 @@ jobs:
 
     - name: Run Main Terraform
       env:
-        TF_VAR_PREFIX: "ci-"
+        environment: "ci"
       run: |
         cd terraform
         terraform init
-        terraform apply -auto-approve
+        terraform apply -auto-approve -var "environment=${{ env.environment }}"
         public_ip=$(terraform output -json public_ip | tr -d '"')
         echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
-        # Get the JSON output from Terraform and assign it to a variable
-        json_output=$(terraform output -json "acm_dns_validation")
-        acm_dns_validation_cname=$(echo "$json_output" | sed -n 's/{"\([^"]*\)":.*/\1/p')
-        echo "DNS_CNAME=$acm_dns_validation_cname" >> $GITHUB_ENV
-        acm_dns_validation_value=$(echo "$json_output" | sed -n 's/.*"\(.*\)".*/\1/p')
-        echo "DNS_VALUE=$acm_dns_validation_value" >> $GITHUB_ENV
     
     - name: Server Details
       run: |
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
-        echo "DNS Validation CNAME Is: ${{ env.DNS_CNAME }}"
-        echo "DNS Validation Value Is: ${{ env.DNS_VALUE }}"
+
+    - name: Copy Nginx Config
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ./ec2files/peakaltitudestudio-nginx.conf
+        target: temp/
+
+    - name: Setup Nginx Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          set -e
+          sudo mv temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
+          sudo systemctl reload nginx
 
     - name: Set up Docker
       run: |
@@ -88,28 +101,3 @@ jobs:
           if [ -n "$untagged_images" ]; then
             docker rmi $untagged_images
           fi
-
-    - name: Copy Nginx Config
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.PUBLIC_IP }}
-        username: ec2-user
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: peakaltitudestudio-nginx.conf
-        target: /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
-
-    - name: Setup Nginx Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.PUBLIC_IP }}
-        username: ec2-user
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script_stop: true
-        script: |
-          set -e
-          sudo certbot certonly --nginx -n --agree-tos --email adamlarson@peakaltitudestudio.com -d peakaltitudestudio.com -d www.peakaltitudestudio.com
-          sudo systemctl reload nginx
-
-    # - name: Set a completion flag
-    #   id: completion
-    #   run: echo "Completed Main Workflow"
