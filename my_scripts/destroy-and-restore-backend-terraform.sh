@@ -24,3 +24,6 @@ cp ./pipeline-tf-backend/backend.tf ./backend.tf
 terraform init
 terraform destroy --auto-approve
 rm ./backend.tf
+rm ./terraform.tfstate
+rm ./terraform.tfstate.backup
+rm -r .terraform

@@ -37,7 +37,7 @@ jobs:
 
     - name: Run Main Terraform
       env:
-        environment: "ci-"
+        environment: "ci"
       run: |
         cd terraform
         terraform init
