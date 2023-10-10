@@ -67,8 +67,7 @@ jobs:
         script_stop: true
         script: |
           set -e
-          sudo ls
-          sudo cp temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
+          sudo mv temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
           sudo systemctl reload nginx
 
     - name: Set up Docker
