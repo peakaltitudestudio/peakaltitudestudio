@@ -50,14 +50,13 @@ jobs:
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
 
     - name: Copy Nginx Config
-      uses: appleboy/ssh-action@master
+      uses: appleboy/scp-action@master
       with:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: peakaltitudestudio-nginx.conf
+        source: ec2files/peakaltitudestudio-nginx.conf
         target: temp/peakaltitudestudio-nginx.conf
-        script_stop: true
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
