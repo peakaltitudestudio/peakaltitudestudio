@@ -87,8 +87,19 @@ jobs:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: ec2files/peakaltitudestudio-nginx.conf
+        source: ./ec2files/peakaltitudestudio-nginx.conf
         target: /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
+
+    - name: Check .conf Was Copied
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          set -e
+          sudo cat /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master

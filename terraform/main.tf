@@ -110,11 +110,8 @@ resource "aws_lb_listener" "https_listener_forward" {
   certificate_arn   = aws_acm_certificate.pas_acm_cert.arn
 
   default_action {
-    type             = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      status_code  = "200"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.pas_target_group.arn
   }
 }
 
