@@ -68,7 +68,7 @@ jobs:
         script: |
           set -e
           sudo ls
-          sudo mv temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
+          sudo cp temp/ec2files/peakaltitudestudio-nginx.conf /etc/nginx/conf.d/peakaltitudestudio-nginx.conf
           sudo systemctl reload nginx
 
     - name: Set up Docker
