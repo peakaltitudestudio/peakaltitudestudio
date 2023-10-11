@@ -24,6 +24,7 @@ jobs:
         environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       run: |
         aws_region="us-west-1"
+        echo "${{ github.ref }}"
         s3_bucket_name="tf-${{ env.environment }}-state-storage-bucket"
         echo $s3_bucket_name
 
