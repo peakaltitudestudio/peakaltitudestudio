@@ -20,9 +20,11 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Setup Terraform State Backend
+      env:
+        environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       run: |
         aws_region="us-west-1"
-        s3_bucket_name="tf-ci-state-storage-bucket"
+        s3_bucket_name="tf-${{ env.environment }}-state-storage-bucket"
 
         cd terraform
         # 2>/dev/null keeps it from erroring and continues execution
