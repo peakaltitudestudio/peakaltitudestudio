@@ -10,6 +10,12 @@ variable "environment_noblank" {
   default     = "local"
 }
 
+variable "environment_dot" {
+  description = "The environment for the subnet (e.g., local, ci)"
+  type        = string
+  default     = "local."
+}
+
 variable "manually_created_zone_id" {
   description = "This is a route 53 zone id that was manually created to preserve NS records"
   type        = string

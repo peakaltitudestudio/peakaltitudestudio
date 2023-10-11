@@ -7,6 +7,10 @@ locals {
 }
 
 locals {
+    env_dot = var.environment_dot
+}
+
+locals {
   main_subnet_cidr_block = var.environment == "local" ? "10.0.0.0/24" : "10.0.1.0/24"
 }
 

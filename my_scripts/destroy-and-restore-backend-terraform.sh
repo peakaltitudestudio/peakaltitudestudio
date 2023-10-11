@@ -1,6 +1,6 @@
 #!/bin/bash
 
-environment="local"
+environment=""
 
 # Parse command-line options
 while getopts "e:env:" opt; do
