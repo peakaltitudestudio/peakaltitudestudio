@@ -18,14 +18,11 @@ jobs:
       run: |
         if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
           echo "Setting environment to ''"
-          echo "env:
-          environment: ''" >> $GITHUB_ENV
+          echo "environment=''" >> $GITHUB_ENV
         else
-        echo "Setting environment to 'dev'"
-        echo "env:
-          environment: 'dev'" >> $GITHUB_ENV
+          echo "Setting environment to 'dev'"
+          echo "environment='dev'" >> $GITHUB_ENV
         fi
-        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
 
     - name: Show Environment Variable
       run: echo "Environment is ${{ env.environment }}"
