@@ -40,7 +40,7 @@ jobs:
           terraform apply -auto-approve -var "environment=${{ env.environment }}"
           cd ..
         fi
-        mv ./pipeline-tf-backend/backend.tf ./backend.tf
+        mv ./${{ env.environment }}pipeline-tf-backend/backend.tf ./backend.tf
 
     - name: Run Main Terraform
       env:
