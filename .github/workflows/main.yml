@@ -24,9 +24,9 @@ jobs:
         else
           echo "Using dev Environment"
           echo "Setting environment to 'dev'"
-          echo "environment='dev'" >> $GITHUB_ENV
-          echo "environment_noblank='dev'" >> $GITHUB_ENV
-          echo "environment_dot='dev.'" >> $GITHUB_ENV
+          echo "environment=dev" >> $GITHUB_ENV
+          echo "environment_noblank=dev" >> $GITHUB_ENV
+          echo "environment_dot=dev." >> $GITHUB_ENV
         fi
 
     - name: Configure AWS Usage

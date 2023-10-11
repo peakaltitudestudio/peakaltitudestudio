@@ -5,14 +5,14 @@ import './App.css';
 //        secondary: #c4a068
 
 function App() {
-  const instagramURL = 'https://www.instagram.com/peak.altitude.studio/'
+  const instagramURL = 'https://junerings.com/products/antique-cut-elongated-cushion-solitaire?_pos=5&_sid=7cf1d4386&_ss=r'
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Peak Altitude Studio</p>
         <a style={{color:'#c4a068', 'text-decoration': 'none'}} href={instagramURL} target="_blank" rel="noopener noreferrer">
-          Instagram: peak.altitude.studio
+          Juliette Click Here
         </a>
         <p>Phone #: (602)529-2499</p>
         <br></br>
