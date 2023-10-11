@@ -88,7 +88,7 @@ output "public_ip" {
 }
 
 resource "aws_lb" "pas_elb" {
-  name               = "${local.env}-pas"
+  name               = "${local.env_noblank}-pas"
   internal           = false
   load_balancer_type = "application"
   subnets            = [
@@ -131,7 +131,7 @@ resource "aws_lb_listener" "http_listener_redirect" {
 }
 
 resource "aws_lb_target_group" "pas_target_group" {
-  name        = "${local.env}-pas-target-group"
+  name        = "${local.env_noblank}-pas-target-group"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.pas_main_vpc.id
