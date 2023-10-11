@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - tim
 
 jobs:
   build-and-deploy:
@@ -21,12 +22,18 @@ jobs:
           echo "environment=" >> $GITHUB_ENV
           echo "environment_noblank=main" >> $GITHUB_ENV
           echo "environment_dot=" >> $GITHUB_ENV
-        else
+        elif [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
           echo "Using dev Environment"
-          echo "Setting environment to 'dev'"
+          echo "Setting environment to dev"
           echo "environment=dev" >> $GITHUB_ENV
           echo "environment_noblank=dev" >> $GITHUB_ENV
           echo "environment_dot=dev." >> $GITHUB_ENV
+        else
+          echo "Using tim Environment"
+          echo "Setting environment to tim"
+          echo "environment=tim" >> $GITHUB_ENV
+          echo "environment_noblank=tim" >> $GITHUB_ENV
+          echo "environment_dot=tim." >> $GITHUB_ENV
         fi
 
     - name: Configure AWS Usage
