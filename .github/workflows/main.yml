@@ -25,6 +25,7 @@ jobs:
       run: |
         aws_region="us-west-1"
         s3_bucket_name="tf-${{ env.environment }}-state-storage-bucket"
+        echo $s3_bucket_name
 
         cd terraform
         # 2>/dev/null keeps it from erroring and continues execution
@@ -36,7 +37,7 @@ jobs:
           cp ../variables.tf variables.tf 
           cp ../terraform.tfvars terraform.tfvars
           terraform init
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var "environment=${{ env.environment }}"
           cd ..
         fi
         mv ./pipeline-tf-backend/backend.tf ./backend.tf
