@@ -4,5 +4,5 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "tf-s3-state-storage" {
-  bucket = "tf-${local.env}-state-storage-bucket"
+  bucket = "tf-${local.env_noblank}-state-storage-bucket"
 }

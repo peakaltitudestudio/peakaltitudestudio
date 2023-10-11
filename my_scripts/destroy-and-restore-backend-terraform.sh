@@ -30,6 +30,16 @@ aws_region="us-west-1"
 s3_bucket_name="tf-${environment}-state-storage-bucket"
 
 cd ../terraform
+
+if [ "${environment}" == "main" ]; then
+    environment=''
+fi
+
+if ! [ -e "./pipeline-tf-backend/${environment}backend.tf" ]; then
+    echo "backend file did not exist ./pipeline-tf-backend/${environment}backend.tf"
+    exit 1
+fi
+
 # 2>/dev/null keeps it from erroring and continues execution
 if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
     echo "S3 bucket exists, continuing with destroying."
@@ -37,7 +47,8 @@ else
     echo "Exiting... because S3 Bucket did not exist, meaning no backend state exists, must destory any hanging resources manually"
     exit 1
 fi
-cp ./pipeline-tf-backend/${environment}devbackend.tf ./backend.tf
+
+cp ./pipeline-tf-backend/${environment}backend.tf ./backend.tf
 terraform init
 terraform destroy --auto-approve
 rm ./backend.tf
