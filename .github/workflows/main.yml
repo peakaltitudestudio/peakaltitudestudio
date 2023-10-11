@@ -18,7 +18,7 @@ jobs:
       run: |
         if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
           echo "Setting environment to ''"
-          echo "environment=''" >> $GITHUB_ENV
+          echo "environment=" >> $GITHUB_ENV
         else
           echo "Setting environment to 'dev'"
           echo "environment='dev'" >> $GITHUB_ENV
