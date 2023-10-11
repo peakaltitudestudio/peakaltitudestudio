@@ -32,6 +32,9 @@ jobs:
           echo "S3 bucket already exists, skipping bucket creation."
         else
           cd pipeline-tf-create-bucket
+          cp ../locals.tf locals.tf
+          cp ../variables.tf variables.tf 
+          cp ../terraform.tfvars terraform.tfvars
           terraform init
           terraform apply -auto-approve
           cd ..
