@@ -1,12 +1,11 @@
 resource "aws_acm_certificate" "pas_acm_cert" {
-  domain_name       = "peakaltitudestudio.com"
+  domain_name       = "${local.env}.peakaltitudestudio.com"
   validation_method = "DNS"
 }
 
 resource "aws_acm_certificate_validation" "pas_cert_validation" {
   certificate_arn = aws_acm_certificate.pas_acm_cert.arn
 }
-
 
 resource "aws_route53_record" "pas_cert_cname_record" {
   zone_id = var.manually_created_zone_id
@@ -18,7 +17,7 @@ resource "aws_route53_record" "pas_cert_cname_record" {
 
 resource "aws_route53_record" "pas_record" {
   zone_id = var.manually_created_zone_id
-  name    = "peakaltitudestudio.com"
+  name    = "${local.env}.peakaltitudestudio.com"
   type    = "A"
 
   alias {
@@ -30,7 +29,7 @@ resource "aws_route53_record" "pas_record" {
 
 resource "aws_route53_record" "www_pas_record" {
   zone_id = var.manually_created_zone_id
-  name    = "www.peakaltitudestudio.com"
+  name    = "www.${local.env}.peakaltitudestudio.com"
   type    = "A"
 
   alias {

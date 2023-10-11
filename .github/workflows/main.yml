@@ -1,9 +1,10 @@
-name: Deploy to AWS EC2
+name: Launch Main Website
 
 on:
   push:
     branches:
-      - '*'
+      - main
+      - dev
 
 jobs:
   build-and-deploy:
@@ -19,9 +20,11 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Setup Terraform State Backend
+      env:
+        environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       run: |
         aws_region="us-west-1"
-        s3_bucket_name="tf-ci-state-storage-bucket"
+        s3_bucket_name="tf-${{ env.environment }}-state-storage-bucket"
 
         cd terraform
         # 2>/dev/null keeps it from erroring and continues execution
@@ -37,7 +40,7 @@ jobs:
 
     - name: Run Main Terraform
       env:
-        environment: "ci"
+        environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       run: |
         cd terraform
         terraform init
@@ -51,11 +54,13 @@ jobs:
 
     - name: Copy Nginx Config
       uses: appleboy/scp-action@master
+      env:
+        environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       with:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: ./ec2files/peakaltitudestudio-nginx.conf
+        source: ./ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf
         target: temp/
 
     - name: Setup Nginx Server
