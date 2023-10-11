@@ -69,6 +69,8 @@ jobs:
 
     - name: Setup Nginx Server
       uses: appleboy/ssh-action@master
+      env:
+        environment: ${{ github.ref == 'refs/heads/main' && '' || 'dev' }}
       with:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
