@@ -28,5 +28,8 @@ config="server {
     }
 }"
 
+ls
+cd ec2files
+ls
 touch ./ec2files/${branch}peakaltitudestudio-nginx.conf
 echo "$config" > ./ec2files/${branch}peakaltitudestudio-nginx.conf
