@@ -45,7 +45,7 @@ jobs:
       run: |
         aws_region="us-west-1"
         echo "${{ github.ref }}"
-        s3_bucket_name="tf-${{ env.environment }}-state-storage-bucket"
+        s3_bucket_name="tf-${{ env.environment_noblank }}-state-storage-bucket"
         echo $s3_bucket_name
 
         cd terraform
