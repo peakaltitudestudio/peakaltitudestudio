@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Check PR status
         run: |
-          const baseBranch = "${{ github.event.pull_request.base.ref }}"
+          baseBranch = "${{ github.event.pull_request.base.ref }}"
           echo "Base branch: $baseBranch"
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          headBranch = "${{ github.event.pull_request.head.ref }}"
+          echo "Head branch: $headBranch"
 
     #   - name: Delete Branch
     #     if: steps.pr.outputs.PR !== 'PR is merged into a protected branch'
