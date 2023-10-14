@@ -28,4 +28,5 @@ config="server {
     }
 }"
 
+touch ./ec2files/${branch}peakaltitudestudio-nginx.conf
 echo "$config" > ./ec2files/${branch}peakaltitudestudio-nginx.conf
