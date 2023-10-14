@@ -17,7 +17,7 @@ jobs:
       run: |
         dirty_branch=$(basename "${{ github.ref }}")
         # clean the branch name
-        branch=$(echo "$dirty_branch" | sed 's/[^a-zA-Z0-9_-]//g')
+        branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-')
         if [[ "$branch" == "main" ]]; then
           echo "Using main Environment"
           echo "environment=" >> $GITHUB_ENV
