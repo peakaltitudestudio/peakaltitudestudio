@@ -11,11 +11,9 @@ jobs:
     
     steps:
       - name: Check PR status
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const baseBranch = github.event.pull_request.base.ref;
-            console.log("Base branch: " + baseBranch)
+        run: |
+          const baseBranch = "${{ github.event.pull_request.base.ref }}"
+          echo "Base branch: $baseBranch"
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
