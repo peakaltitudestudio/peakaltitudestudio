@@ -1,17 +1,15 @@
 #!/bin/bash
 
 # Default server name
-server_name="peakaltitudestudio.com www.peakaltitudestudio.com"
+server_name="peakaltitudestudio.com www.peakaltitudestudio.com;"
 
 # Check for the branch argument
 while getopts "b:" opt; do
   case "$opt" in
     b)
       branch="$OPTARG"
-      if [ "${branch}" == "" ]; then
-        branch=''
-      else
-        server_name="${branch}.peakaltitudestudio.com www.${branch}.peakaltitudestudio.com"        
+      if [ "${branch}" != "" ]; then
+        server_name="${branch}.peakaltitudestudio.com www.${branch}.peakaltitudestudio.com;"        
       fi
       ;;
   esac
