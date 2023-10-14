@@ -17,8 +17,8 @@ jobs:
       run: |
         dirty_branch=$(basename "${{ github.ref }}")
         # clean the branch name
-        branch=$(echo "${{ env.dirty_branch }}" | sed 's/[^a-zA-Z0-9_-]//g')
-        if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
+        branch=$(echo "$dirty_branch" | sed 's/[^a-zA-Z0-9_-]//g')
+        if [[ "$branch" == 'main' ]]; then
           echo "Using main Environment"
           echo "environment=" >> $GITHUB_ENV
           echo "environment_noblank=main" >> $GITHUB_ENV
@@ -26,9 +26,9 @@ jobs:
         else
           echo "Using tim Environment"
           echo "Setting environment to tim"
-          echo "environment=${{ env.branch }}" >> $GITHUB_ENV
-          echo "environment_noblank=${{ env.branch }}" >> $GITHUB_ENV
-          echo "environment_dot=${{ env.branch }}." >> $GITHUB_ENV
+          echo "environment=$branch" >> $GITHUB_ENV
+          echo "environment_noblank=$branch" >> $GITHUB_ENV
+          echo "environment_dot=$branch." >> $GITHUB_ENV
         fi
         echo "no blank: ${{ env.environment_noblank }}"
         echo "dot: ${{ env.environment_dot }}"
