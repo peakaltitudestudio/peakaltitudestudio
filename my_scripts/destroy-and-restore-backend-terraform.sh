@@ -26,6 +26,8 @@ else
     exit 1
 fi
 
+
+
 aws_region="us-west-1"
 s3_bucket_name="tf-${environment}-state-storage-bucket"
 
@@ -35,10 +37,17 @@ if [ "${environment}" == "main" ]; then
     environment=''
 fi
 
-if ! [ -e "./pipeline-tf-backend/${environment}backend.tf" ]; then
-    echo "backend file did not exist ./pipeline-tf-backend/${environment}backend.tf"
-    exit 1
-fi
+contents="# Needs to be moved to same directory as main.tf in the pipeline
+terraform {
+  backend \"s3\" {
+    bucket         = \"$s3_bucket_name\"
+    key            = \"state-storage/terraform.tfstate\"
+    encrypt        = true
+    region         = \"us-west-1\"
+  }
+}"
+
+echo "$contents" > ./backend.tf
 
 # 2>/dev/null keeps it from erroring and continues execution
 if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
@@ -48,7 +57,6 @@ else
     exit 1
 fi
 
-cp ./pipeline-tf-backend/${environment}backend.tf ./backend.tf
 terraform init
 terraform destroy --auto-approve
 rm ./backend.tf

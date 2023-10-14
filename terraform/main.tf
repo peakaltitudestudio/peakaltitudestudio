@@ -66,6 +66,10 @@ resource "aws_instance" "pas_website_ec2_instance" {
     aws_security_group.allow_http_and_https_sg.id
   ]
 
+  tags = {
+    Name = "${local.env_noblank}"
+  }
+
   user_data = <<-EOF
     #!/bin/bash
     sudo yum update -y
@@ -131,7 +135,7 @@ resource "aws_lb_listener" "http_listener_redirect" {
 }
 
 resource "aws_lb_target_group" "pas_target_group" {
-  name        = "${local.env_noblank}-pas-target-group"
+  name        = "${local.env_noblank}-pas-tg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.pas_main_vpc.id
