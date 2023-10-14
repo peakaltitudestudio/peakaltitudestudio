@@ -17,9 +17,8 @@ jobs:
       run: |
         dirty_branch=$(basename "${{ github.ref }}")
         # clean the branch name
-        echo "$dirty_branch"
         branch=$(echo "$dirty_branch" | sed 's/[^a-zA-Z0-9_-]//g')
-        if [[ "$branch" == 'main' ]]; then
+        if [[ "$branch" == "main" ]]; then
           echo "Using main Environment"
           echo "environment=" >> $GITHUB_ENV
           echo "environment_noblank=main" >> $GITHUB_ENV
@@ -30,9 +29,13 @@ jobs:
           echo "environment_noblank=$branch" >> $GITHUB_ENV
           echo "environment_dot=$branch." >> $GITHUB_ENV
         fi
+
+    - name: print env
+      run: |
         echo "no blank: ${{ env.environment_noblank }}"
         echo "dot: ${{ env.environment_dot }}"
         echo "normal: ${{ env.environment }}"
+        exit 1
 
     # - name: Configure AWS Usage
     #   run: |
