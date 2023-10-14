@@ -51,9 +51,9 @@ echo "$contents" > ./backend.tf
 
 # 2>/dev/null keeps it from erroring and continues execution
 if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
-    echo "S3 bucket exists, continuing with destroying."
+    echo "S3 bucket ($s3_bucket_name) exists, continuing with destroying."
 else
-    echo "Exiting... because S3 Bucket did not exist, meaning no backend state exists, must destory any hanging resources manually"
+    echo "Exiting... because S3 bucket ($s3_bucket_name) did not exist, meaning no backend state exists, must destory any hanging resources manually"
     exit 1
 fi
 
@@ -63,3 +63,8 @@ rm ./backend.tf
 rm ./terraform.tfstate
 rm ./terraform.tfstate.backup
 rm -r .terraform
+
+# delete terraform bucket
+if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
+    aws s3 rb s3://$s3_bucket_name --force
+fi
