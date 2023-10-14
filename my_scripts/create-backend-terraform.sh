@@ -15,7 +15,7 @@ done
 contents="# Needs to be moved to same directory as main.tf in the pipeline
 terraform {
   backend "s3" {
-    bucket         = "$s3bucket"
+    bucket         = "$s3_bucket_name"
     key            = "state-storage/terraform.tfstate"
     encrypt        = true
     region         = "us-west-1"
