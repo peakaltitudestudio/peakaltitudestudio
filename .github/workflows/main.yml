@@ -2,10 +2,8 @@ name: Launch Main Website
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - tim
+    branches: 
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -17,23 +15,19 @@ jobs:
 
     - name: Set env
       run: |
-        if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
+        dirty_branch=$(basename "${{ github.ref }}")
+        # Convert to lowercase, remove unwanted characters, and limit to 27 characters for target group limit (34)
+        branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
+        if [[ "$branch" == "main" ]]; then
           echo "Using main Environment"
           echo "environment=" >> $GITHUB_ENV
-          echo "environment_noblank=main" >> $GITHUB_ENV
+          echo "environment_noblank=$branch" >> $GITHUB_ENV
           echo "environment_dot=" >> $GITHUB_ENV
-        elif [[ "${{ github.ref }}" == 'refs/heads/dev' ]]; then
-          echo "Using dev Environment"
-          echo "Setting environment to dev"
-          echo "environment=dev" >> $GITHUB_ENV
-          echo "environment_noblank=dev" >> $GITHUB_ENV
-          echo "environment_dot=dev." >> $GITHUB_ENV
         else
-          echo "Using tim Environment"
-          echo "Setting environment to tim"
-          echo "environment=tim" >> $GITHUB_ENV
-          echo "environment_noblank=tim" >> $GITHUB_ENV
-          echo "environment_dot=tim." >> $GITHUB_ENV
+          echo "Setting environment to $branch"
+          echo "environment=$branch" >> $GITHUB_ENV
+          echo "environment_noblank=$branch" >> $GITHUB_ENV
+          echo "environment_dot=$branch." >> $GITHUB_ENV
         fi
 
     - name: Configure AWS Usage
@@ -44,7 +38,6 @@ jobs:
     - name: Setup Terraform State Backend
       run: |
         aws_region="us-west-1"
-        echo "${{ github.ref }}"
         s3_bucket_name="tf-${{ env.environment_noblank }}-state-storage-bucket"
         echo $s3_bucket_name
 
@@ -61,7 +54,7 @@ jobs:
           terraform apply -auto-approve -var "environment=${{ env.environment }}" -var "environment_noblank=${{ env.environment_noblank }}" -var "environment_dot=${{ env.environment_dot }}"
           cd ..
         fi
-        mv ./pipeline-tf-backend/${{ env.environment }}backend.tf ./backend.tf
+        ../my_scripts/create-backend-terraform.sh -b $s3_bucket_name
 
     - name: Run Main Terraform
       run: |
@@ -75,13 +68,17 @@ jobs:
       run: |
         echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
 
+    - name: Create Nginx Config
+      run: |
+        ./my_scripts/create-ngnix-conf.sh -b ${{ env.environment }}
+
     - name: Copy Nginx Config
       uses: appleboy/scp-action@master
       with:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: ./ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf
+        source: ./${{ env.environment }}peakaltitudestudio-nginx.conf
         target: temp/
 
     - name: Setup Nginx Server
@@ -93,7 +90,7 @@ jobs:
         script_stop: true
         script: |
           set -e
-          sudo mv temp/ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
+          sudo mv temp/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
           sudo systemctl reload nginx
 
     - name: Set up Docker
