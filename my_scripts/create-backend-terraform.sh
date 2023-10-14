@@ -14,13 +14,12 @@ done
 # terraform backend contents
 contents="# Needs to be moved to same directory as main.tf in the pipeline
 terraform {
-  backend "s3" {
-    bucket         = "$s3_bucket_name"
-    key            = "state-storage/terraform.tfstate"
+  backend \"s3\" {
+    bucket         = \"$s3_bucket_name\"
+    key            = \"state-storage/terraform.tfstate\"
     encrypt        = true
-    region         = "us-west-1"
+    region         = \"us-west-1\"
   }
 }"
 
-ls
 echo "$contents" > ./backend.tf
