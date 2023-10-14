@@ -31,98 +31,97 @@ jobs:
           echo "environment_dot=$branch." >> $GITHUB_ENV
         fi
 
-    # - name: Configure AWS Usage
-    #   run: |
-    #     aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Configure AWS Usage
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    # - name: Setup Terraform State Backend
-    #   run: |
-    #     aws_region="us-west-1"
-    #     s3_bucket_name="tf-${{ env.environment_noblank }}-state-storage-bucket"
-    #     echo $s3_bucket_name
+    - name: Setup Terraform State Backend
+      run: |
+        aws_region="us-west-1"
+        s3_bucket_name="tf-${{ env.environment_noblank }}-state-storage-bucket"
+        echo $s3_bucket_name
 
-    #     cd terraform
-    #     # 2>/dev/null keeps it from erroring and continues execution
-    #     if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
-    #       echo "S3 bucket already exists, skipping bucket creation."
-    #     else
-    #       cd pipeline-tf-create-bucket
-    #       cp ../locals.tf locals.tf
-    #       cp ../variables.tf variables.tf 
-    #       cp ../terraform.tfvars terraform.tfvars
-    #       terraform init
-    #       terraform apply -auto-approve -var "environment=${{ env.environment }}" -var "environment_noblank=${{ env.environment_noblank }}" -var "environment_dot=${{ env.environment_dot }}"
-    #       cd ..
-    #     fi
-    #     mv ./pipeline-tf-backend/${{ env.environment }}backend.tf ./backend.tf
+        cd terraform
+        # 2>/dev/null keeps it from erroring and continues execution
+        if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
+          echo "S3 bucket already exists, skipping bucket creation."
+        else
+          cd pipeline-tf-create-bucket
+          cp ../locals.tf locals.tf
+          cp ../variables.tf variables.tf 
+          cp ../terraform.tfvars terraform.tfvars
+          terraform init
+          terraform apply -auto-approve -var "environment=${{ env.environment }}" -var "environment_noblank=${{ env.environment_noblank }}" -var "environment_dot=${{ env.environment_dot }}"
+          cd ..
+        fi
+        ../my_scripts/create-backend-terraform.sh -b $s3_bucket_name
 
-    # - name: Run Main Terraform
-    #   run: |
-    #     cd terraform
-    #     terraform init
-    #     terraform apply -auto-approve -var "environment=${{ env.environment }}" -var "environment_noblank=${{ env.environment_noblank }}" -var "environment_dot=${{ env.environment_dot }}"
-    #     public_ip=$(terraform output -json public_ip | tr -d '"')
-    #     echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
+    - name: Run Main Terraform
+      run: |
+        cd terraform
+        terraform init
+        terraform apply -auto-approve -var "environment=${{ env.environment }}" -var "environment_noblank=${{ env.environment_noblank }}" -var "environment_dot=${{ env.environment_dot }}"
+        public_ip=$(terraform output -json public_ip | tr -d '"')
+        echo "PUBLIC_IP=$public_ip" >> $GITHUB_ENV
     
-    # - name: Server Details
-    #   run: |
-    #     echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
+    - name: Server Details
+      run: |
+        echo "Public IPv4 Is: ${{ env.PUBLIC_IP }}"
 
     - name: Create Nginx Config
       run: |
-        echo "${{ env.environment }}"
-        ./my_scripts/ngnix-conf-create.sh -b ${{ env.environment }}
+        ./my_scripts/create-ngnix-conf.sh -b ${{ env.environment }}
 
-    # - name: Copy Nginx Config
-    #   uses: appleboy/scp-action@master
-    #   with:
-    #     host: ${{ env.PUBLIC_IP }}
-    #     username: ec2-user
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     source: ./ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf
-    #     target: temp/
+    - name: Copy Nginx Config
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ./ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf
+        target: temp/
 
-    # - name: Setup Nginx Server
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: ${{ env.PUBLIC_IP }}
-    #     username: ec2-user
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     script_stop: true
-    #     script: |
-    #       set -e
-    #       sudo mv temp/ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
-    #       sudo systemctl reload nginx
+    - name: Setup Nginx Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          set -e
+          sudo mv temp/ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
+          sudo systemctl reload nginx
 
-    # - name: Set up Docker
-    #   run: |
-    #     cd pas-website
-    #     docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-    #     docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-    #     docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest    
+    - name: Set up Docker
+      run: |
+        cd pas-website
+        docker build . --tag ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
+        docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
+        docker push ghcr.io/peakaltitudestudio/pas-website-ghrc:latest    
 
-    # - name: Deploy to EC2 Instance
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: ${{ env.PUBLIC_IP }}
-    #     username: ec2-user
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     script_stop: true
-    #     script: |
-    #       set -e
-    #       running_ids=$(docker ps -q)
-    #       if [ -n "$running_ids" ]; then
-    #         docker kill $running_ids
-    #       fi
-    #       all_ids=$(docker ps -qa)
-    #       if [ -n "$all_ids" ]; then
-    #         docker rm $all_ids
-    #       fi
-    #       docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-    #       docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
-    #       docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
-    #       untagged_images=$(docker images -f "dangling=true" -q)
-    #       if [ -n "$untagged_images" ]; then
-    #         docker rmi $untagged_images
-    #       fi
+    - name: Deploy to EC2 Instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: |
+          set -e
+          running_ids=$(docker ps -q)
+          if [ -n "$running_ids" ]; then
+            docker kill $running_ids
+          fi
+          all_ids=$(docker ps -qa)
+          if [ -n "$all_ids" ]; then
+            docker rm $all_ids
+          fi
+          docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
+          docker pull ghcr.io/peakaltitudestudio/pas-website-ghrc:latest
+          docker run -d -p 3000:3000 ghcr.io/peakaltitudestudio/pas-website-ghrc
+          untagged_images=$(docker images -f "dangling=true" -q)
+          if [ -n "$untagged_images" ]; then
+            docker rmi $untagged_images
+          fi

@@ -4,11 +4,11 @@
 server_name="peakaltitudestudio.com www.peakaltitudestudio.com;"
 
 # Check for the branch argument
-while getopts "b:" opt; do
+while getopts ":b:" opt; do
   case "$opt" in
     b)
       branch="$OPTARG"
-      if [ "${branch}" != "" ]; then
+      if [ -n "$branch" ]; then
         server_name="${branch}.peakaltitudestudio.com www.${branch}.peakaltitudestudio.com;"        
       fi
       ;;
