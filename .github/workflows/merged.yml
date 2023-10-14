@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Check PR status
         run: |
-          baseBranch = "${{ github.event.pull_request.base.ref }}"
+          baseBranch="${{ github.event.pull_request.base.ref }}"
           echo "Base branch: $baseBranch"
-          headBranch = "${{ github.event.pull_request.head.ref }}"
+          headBranch="${{ github.event.pull_request.head.ref }}"
           echo "Head branch: $headBranch"
 
     #   - name: Delete Branch
