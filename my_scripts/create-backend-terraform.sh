@@ -1,5 +1,7 @@
 #!/bin/bash
 
+s3_bucket_name=''
+
 # Check for the bucket argument
 while getopts ":b:" opt; do
   case "$opt" in
