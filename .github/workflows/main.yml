@@ -78,7 +78,7 @@ jobs:
         host: ${{ env.PUBLIC_IP }}
         username: ec2-user
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: ./ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf
+        source: ./${{ env.environment }}peakaltitudestudio-nginx.conf
         target: temp/
 
     - name: Setup Nginx Server
@@ -90,7 +90,7 @@ jobs:
         script_stop: true
         script: |
           set -e
-          sudo mv temp/ec2files/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
+          sudo mv temp/${{ env.environment }}peakaltitudestudio-nginx.conf /etc/nginx/conf.d/
           sudo systemctl reload nginx
 
     - name: Set up Docker
