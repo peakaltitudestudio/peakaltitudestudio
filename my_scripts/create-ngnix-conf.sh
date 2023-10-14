@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default server name
-server_name="peakaltitudestudio.com www.peakaltitudestudio.com;"
+server_name="peakaltitudestudio.com www.peakaltitudestudio.com"
 
 # Check for the branch argument
 while getopts ":b:" opt; do
@@ -9,7 +9,7 @@ while getopts ":b:" opt; do
     b)
       branch="$OPTARG"
       if [ -n "$branch" ]; then
-        server_name="${branch}.peakaltitudestudio.com www.${branch}.peakaltitudestudio.com;"        
+        server_name="${branch}.peakaltitudestudio.com www.${branch}.peakaltitudestudio.com"        
       fi
       ;;
   esac
