@@ -51,7 +51,8 @@ jobs:
           
       - name: Destroy Branch Terraform
         run: |
-          dirty_branch=$(basename "${{ github.event.pull_request.head.ref }}")
+          dirty_branch="${{ github.event.pull_request.head.ref }}"
           # Convert to lowercase, remove unwanted characters, and limit to 27 characters for target group limit (34)
-          branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
-          ./my_scripts/destroy-and-restore-backend-terraform.sh -e $branch
+          environment=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
+          ./my_scripts/destroy-and-restore-backend-terraform.sh -e $environment
+          echo "Remember to manually delete the s3 bucket for environment: $environment"
