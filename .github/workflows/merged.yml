@@ -8,25 +8,28 @@ on:
 jobs:
   check-delete-branch:
     runs-on: ubuntu-latest
+    outputs:
+      shouldDelete: ${{ steps.check.outputs.shouldDelete }}
     steps:
       - name: Check PR status
+        id: check
         run: |
           baseBranch="${{ github.event.pull_request.base.ref }}"
           headBranch="${{ github.event.pull_request.head.ref }}"
           echo "$headBranch was merged into $baseBranch"
-          shouldDelete=false
           if [ "$headBranch" == "main" ] && [ "$headBranch" == "dev" ]; then
             echo "$headBranch is a protected branch and will not be deleted"
-            echo "shouldDelete=false" >> $GITHUB_ENV
+            echo "shouldDelete=false" >> $GITHUB_OUTPUT
           else
             echo "Proceeding with deleting branch: $headBranch"
-            echo "shouldDelete=true" >> $GITHUB_ENV
+            echo "shouldDelete=true" >> $GITHUB_OUTPUT
           fi
+    
 
   delete-branch:
     runs-on: ubuntu-latest
     needs: check-delete-branch
-    if: ${{ vars.shouldDelete == true }} 
+    if: needs.check-delete-branch.outputs.shouldDelete == 'true'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -34,15 +37,15 @@ jobs:
           ref: main
   
     #   - name: Configure AWS Usage
-    #     if: ${{ env.shouldDelete }} == true
     #     run: |
     #       aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
     #       aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   
-    #   - name: Delete Branch
-    #     if: ${{ env.shouldDelete }} == true
-    #     run: |
-    #       echo "Running the branch deletion for branch: ${{ github.event.pull_request.head.ref }}"
-    #       git fetch --prune
-    #       env:
-    #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete Branch
+        run: |
+          echo "Running the branch deletion for branch: ${{ github.event.pull_request.head.ref }}"
+          git fetch --prune
+          echo "Branch ${{ github.event.pull_request.head.ref }} would have been deleted here."
+          # git push --delete origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
