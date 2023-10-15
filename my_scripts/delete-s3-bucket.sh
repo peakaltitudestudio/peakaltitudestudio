@@ -18,9 +18,9 @@ done
 aws_region="us-west-1"
 s3_bucket_name="tf-${environment}-state-storage-bucket"
 
-read -p "Are you sure you want to proceed with deleteing $s3_bucket_name? (y/n)" response
+read -p "Are you sure you want to proceed with deleteing $s3_bucket_name? (y/n): " response
 
-if [ "$response" == "Y" ] || [ "$response" == "y" ]; then
+if [ "$response" == "Y" ] || [ "$response" == "y" ] || [ "$response" == "yes" ]; then
     echo "Proceeding with s3 backend bucket delete"
 else
     echo "Operation canceled. Will not delete s3 backend bucket"
