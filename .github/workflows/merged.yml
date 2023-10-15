@@ -25,6 +25,7 @@ jobs:
 
   delete-branch:
     runs-on: ubuntu-latest
+    needs: check-delete-branch
     if: ${{ vars.shouldDelete == true }} 
     steps:
       - name: Checkout Repository
