@@ -16,8 +16,8 @@ jobs:
     - name: Set env
       run: |
         dirty_branch=$(basename "${{ github.ref }}")
-        # Convert to lowercase, remove unwanted characters, and limit to 27 characters for target group limit (32)
-        branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
+        # Convert to lowercase, remove unwanted characters, and limit to 25 characters for target group limit (32)
+        branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -25)
         if [[ "$branch" == "main" ]]; then
           echo "Using main Environment"
           echo "environment=" >> $GITHUB_ENV
