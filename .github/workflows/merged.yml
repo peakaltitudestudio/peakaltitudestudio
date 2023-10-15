@@ -17,7 +17,7 @@ jobs:
           baseBranch="${{ github.event.pull_request.base.ref }}"
           headBranch="${{ github.event.pull_request.head.ref }}"
           echo "$headBranch was merged into $baseBranch"
-          if [ "$headBranch" == "main" ] && [ "$headBranch" == "dev" ]; then
+          if [ "$headBranch" == "main" ] || [ "$headBranch" == "dev" ]; then
             echo "$headBranch is a protected branch and will not be deleted"
             echo "shouldDelete=false" >> $GITHUB_OUTPUT
           else
@@ -36,10 +36,10 @@ jobs:
         with:
           ref: main
   
-    #   - name: Configure AWS Usage
-    #     run: |
-    #       aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #       aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Configure AWS Usage
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   
       - name: Delete Branch
         run: |
