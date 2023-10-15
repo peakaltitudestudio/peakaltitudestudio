@@ -40,10 +40,6 @@ jobs:
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Destroy Branch Terraform
-        run: |
-          ls
   
       - name: Delete Branch
         run: |
@@ -52,3 +48,10 @@ jobs:
           git push --delete origin ${{ github.event.pull_request.head.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Destroy Branch Terraform
+        run: |
+          dirty_branch=$(basename "${{ github.event.pull_request.head.ref }}")
+          # Convert to lowercase, remove unwanted characters, and limit to 27 characters for target group limit (34)
+          branch=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
+          ./my_scripts/destroy-and-restore-backend-terraform.sh -e $branch
