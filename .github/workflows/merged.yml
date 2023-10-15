@@ -25,7 +25,7 @@ jobs:
 
   delete-branch:
     runs-on: ubuntu-latest
-    if: ${{ env.shouldDelete == true }} 
+    if: ${{ vars.shouldDelete == true }} 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
