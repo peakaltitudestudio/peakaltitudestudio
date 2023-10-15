@@ -32,7 +32,7 @@ jobs:
     if: needs.check-delete-branch.outputs.shouldDelete == 'true'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: main
   
@@ -45,7 +45,14 @@ jobs:
         run: |
           echo "Running the branch deletion for branch: ${{ github.event.pull_request.head.ref }}"
           git fetch --prune
-          echo "Branch ${{ github.event.pull_request.head.ref }} would have been deleted here."
-          # git push --delete origin ${{ github.event.pull_request.head.ref }}
+          git push --delete origin ${{ github.event.pull_request.head.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Destroy Branch Terraform
+        run: |
+          dirty_branch="${{ github.event.pull_request.head.ref }}"
+          # Convert to lowercase, remove unwanted characters, and limit to 27 characters for target group limit (34)
+          environment=$(echo "$dirty_branch" | tr 'A-Z' 'a-z' | tr -cd 'a-z0-9-' | cut -c -27)
+          ./my_scripts/destroy-and-restore-backend-terraform.sh -e $environment
+          echo "Remember to manually delete the s3 bucket for environment: $environment"

@@ -3,7 +3,7 @@ name: Launch Main Website
 on:
   push:
     branches: 
-      - fake
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set env
       run: |
