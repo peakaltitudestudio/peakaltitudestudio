@@ -15,11 +15,11 @@ jobs:
           headBranch="${{ github.event.pull_request.head.ref }}"
           echo "$headBranch was merged into $baseBranch"
           shouldDelete=false
-          if [ "$headBranch" != "main" ] && [ "$headBranch" != "dev" ]; then
+          if [ "$headBranch" == "main" ] && [ "$headBranch" == "dev" ]; then
             echo "$headBranch is a protected branch and will not be deleted"
             echo "shouldDelete=false" >> $GITHUB_ENV
           else
-          echo "Proceeding with deleting branch: $headBranch"
+            echo "Proceeding with deleting branch: $headBranch"
             echo "shouldDelete=true" >> $GITHUB_ENV
           fi
 
