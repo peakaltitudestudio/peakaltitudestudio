@@ -63,8 +63,3 @@ rm ./backend.tf
 rm ./terraform.tfstate
 rm ./terraform.tfstate.backup
 rm -r .terraform
-
-# delete terraform bucket
-if aws s3api head-bucket --bucket $s3_bucket_name --region $aws_region 2>/dev/null; then
-    aws s3 rb s3://$s3_bucket_name --force
-fi

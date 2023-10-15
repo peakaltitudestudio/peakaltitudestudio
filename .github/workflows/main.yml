@@ -3,7 +3,7 @@ name: Launch Main Website
 on:
   push:
     branches: 
-      - fake
+      - '*'
 
 jobs:
   build-and-deploy:
