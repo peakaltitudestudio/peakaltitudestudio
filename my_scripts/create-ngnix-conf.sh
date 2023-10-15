@@ -16,7 +16,8 @@ while getopts ":b:" opt; do
 done
 
 # Nginx configuration
-config="server {
+config="server_names_hash_bucket_size 128;
+server {
     listen 80;
     server_name $server_name;
 
