@@ -6,21 +6,42 @@ on:
       - closed
 
 jobs:
-  delete-branch:
+  check-delete-branch:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Check PR status
         run: |
           baseBranch="${{ github.event.pull_request.base.ref }}"
-          echo "Base branch: $baseBranch"
           headBranch="${{ github.event.pull_request.head.ref }}"
-          echo "Head branch: $headBranch"
+          echo "$headBranch was merged into $baseBranch"
+          shouldDelete=false
+          if [ "$headBranch" != "main" ] && [ "$headBranch" != "dev" ]; then
+            echo "$headBranch is a protected branch and will not be deleted"
+            echo "shouldDelete=false" >> $GITHUB_ENV
+          else
+          echo "Proceeding with deleting branch: $headBranch"
+            echo "shouldDelete=true" >> $GITHUB_ENV
+          fi
 
-    #   - name: Delete Branch
-    #     if: steps.pr.outputs.PR !== 'PR is merged into a protected branch'
+  delete-branch:
+    runs-on: ubuntu-latest
+    if: ${{ env.shouldDelete == true }} 
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: main
+  
+    #   - name: Configure AWS Usage
+    #     if: ${{ env.shouldDelete }} == true
     #     run: |
+    #       aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #       aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  
+    #   - name: Delete Branch
+    #     if: ${{ env.shouldDelete }} == true
+    #     run: |
+    #       echo "Running the branch deletion for branch: ${{ github.event.pull_request.head.ref }}"
     #       git fetch --prune
-    #       git push --delete origin ${{ github.event.pull_request.head.ref }}
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #       env:
+    #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
