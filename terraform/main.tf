@@ -44,6 +44,8 @@ resource "aws_subnet" "main_pas_subnet" {
   cidr_block              = local.main_subnet_cidr_block
   availability_zone       = "us-west-1a"
   map_public_ip_on_launch = true
+
+  tags = "${local.default_tags}"
 }
 
 resource "aws_subnet" "alt_pas_subnet" {
@@ -51,6 +53,8 @@ resource "aws_subnet" "alt_pas_subnet" {
   cidr_block              = local.alt_subnet_cidr_block
   availability_zone       = "us-west-1c"
   map_public_ip_on_launch = true
+
+  tags = "${local.default_tags}"
 }
 
 
@@ -66,9 +70,7 @@ resource "aws_instance" "pas_website_ec2_instance" {
     aws_security_group.allow_http_and_https_sg.id
   ]
 
-  tags = {
-    Name = "${local.env_noblank}"
-  }
+  tags = "${local.default_tags}"
 
   user_data = <<-EOF
     #!/bin/bash
