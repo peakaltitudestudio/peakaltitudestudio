@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Button from 'react-bootstrap/Button'
 
 import '../styles/Home.scss';
 
@@ -13,18 +12,14 @@ const mobileVideoBg = 'mobile1080.mp4'
 const instagramURL = 'https://www.instagram.com/peak.altitude.studio/'
 
 const Home = () => {
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
-  let videoURL = ""
-  if(window.innerWidth < 1000) {
-    videoURL = baseBucketPath + mobileVideoBg;
-  } else {
-    videoURL = baseBucketPath + mainVideoBg
-  }
+  useEffect(() => {
+    // Use some criteria to detect if it's a mobile device
+    const isMobileDevice = window.innerWidth < 768; // You can adjust this threshold
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };  
+    setIsMobile(isMobileDevice);
+  }, []);
 
   return (
     <div>
@@ -39,15 +34,17 @@ const Home = () => {
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link href="/contact">Contact</Nav.Link>
           </Nav>
-          <Button variant="primary" onClick={toggleMute}>
-            {isMuted ? 'Unmute' : 'Mute'}
-          </Button>
         </Navbar.Collapse>
       </Navbar>
       <div className="video-container">
         <div className='overlay'></div>
-        <video autoPlay loop playsInline muted={isMuted}>
-            <source src={videoURL} type="video/mp4" />
+        <video autoPlay loop muted>
+          {isMobile ? (
+            <source src={baseBucketPath + mobileVideoBg} type="video/mp4" />
+          ) : (
+            <source src={baseBucketPath + mainVideoBg} type="video/mp4" />
+          )}
+          Your browser does not support the video tag.
         </video>
         <div className='content'>
           <h2>Welcome to</h2>
