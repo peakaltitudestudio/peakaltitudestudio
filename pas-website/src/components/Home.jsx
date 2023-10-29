@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button'
@@ -55,11 +55,6 @@ const Home = () => {
           <h1>Studio</h1>
           <br>
           </br>
-          <a style={{ color: '#c4a068', 'text-decoration': 'none' }} href={instagramURL} target="_blank" rel="noopener noreferrer">
-            Instagram: @peak.altitude.studio
-          </a>
-          <br></br>
-          <p>Phone #: (602)529-2499</p>
         </div>
       </div>
     </div>
