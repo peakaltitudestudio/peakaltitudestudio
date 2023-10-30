@@ -4,44 +4,31 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     color: #c4a068;
 }
 
 h2 {
     color: #c4a068;
+    font-family: 'Bodoni', serif;
+    font-weight: bold;
 }
 
 h1 {
     font-size: 50px;
+    font-family: 'Bodoni', serif;
+    font-weight: bold;
 }
 
 .video-container {
     width: 100%;
-    height: 100vh;
+    height: 95vh;
     contain: content;
-}
-
-.logo {
-    height: 5vh;
-    margin: 0;
-    padding: 0;
 }
 
 video {
     width: 100%;
     height: 100vh;
     object-fit: cover;
-}
-
-.navbar {
-    margin: 0;
-    padding: 0;
-}
-
-.navbar-brand {
-    margin: 0;
-    padding: 0;
 }
 
 .content {
@@ -64,4 +51,35 @@ video {
     height: 100%;
     background-color: #000000;
     opacity: 55%;
+}
+
+.mute-button {
+    height: 4vh;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background-color: transparent;
+    border: transparent;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.mute-button:hover {
+    background-color: transparent;
+}
+
+.logo {
+    height: 15vh;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
