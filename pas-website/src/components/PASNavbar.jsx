@@ -8,7 +8,7 @@ const PASNavbar = () => {
     return (
         <div>
             <Navbar bg='dark' variant='dark' expand="lg">
-                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" className='ms-auto'/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto">
                         <Nav.Link href="/">Home</Nav.Link>
