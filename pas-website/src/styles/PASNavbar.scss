@@ -1,0 +1,23 @@
+@import "../custom.scss";
+
+.navbar {
+    height: 5vh;
+    margin: 0;
+    padding: 0;
+    color: $primary
+}
+
+.navbar-brand {
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    color: #fff;
+    margin: 10px;
+    justify-content: center;
+}
+
+.nav-link:hover {
+    color: $secondary;
+}
