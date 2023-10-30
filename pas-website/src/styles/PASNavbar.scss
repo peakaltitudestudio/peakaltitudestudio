@@ -1,21 +1,17 @@
 @import "../custom.scss";
 
 .navbar {
-    height: 5vh;
-    margin: 0;
-    padding: 0;
-    color: $primary
+    padding: 5;
 }
 
-.navbar-brand {
-    margin: 0;
-    padding: 0;
+.navbar-toggler {
+    margin-right: 5px;
 }
 
 .nav-link {
-    color: #fff;
     margin: 10px;
     justify-content: center;
+    display: flex;
 }
 
 .nav-link:hover {
