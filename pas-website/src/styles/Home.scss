@@ -1,14 +1,12 @@
-/* primary:     #2f4d54 */
-/* secondary:   #c4a068 */
-
+@import "../style-variables";
 * {
     margin: 0;
     padding: 0;
-    color: #c4a068;
+    color: $secondary;
 }
 
 h2 {
-    color: #c4a068;
+    color: $secondary;
     font-family: 'Bodoni', serif;
     font-weight: bold;
 }

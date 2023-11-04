@@ -1,4 +1,4 @@
-@import "../custom.scss";
+@import "../style-variables";
 
 .navbar {
     padding: 5;
@@ -17,3 +17,5 @@
 .nav-link:hover {
     color: $secondary;
 }
+
+// end of file
