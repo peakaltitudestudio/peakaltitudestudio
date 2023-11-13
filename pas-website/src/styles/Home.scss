@@ -1,26 +1,26 @@
 @import "../style-variables";
+
 * {
     margin: 0;
     padding: 0;
-    color: $secondary;
 }
 
 h3 {
     color: whitesmoke;
-    font-family: $font-secondary, serif;
+    font-family: $font-secondary;
     font-weight: medium;
 }
 
 h2 {
     color: whitesmoke;
-    font-family: $font-primary, serif;
+    font-family: $font-primary;
     font-weight: bold;
     padding-top: 0px;
 }
 
 h1 {
     color: $secondary;
-    font-family: $font-primary, serif;
+    font-family: $font-primary;
     font-weight: bold;
 }
 

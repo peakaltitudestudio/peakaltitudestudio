@@ -1,0 +1,32 @@
+@import "../style-variables";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.main {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: calc($page-height - $navbar-margins);
+    contain: content;
+    background-color: $dark;
+}
+
+h1, h5 {
+    color: $secondary;
+}
+
+h5 {
+    font-family: $font-secondary;
+}
+
+.text-container {
+    margin-top: 10%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    contain: content;
+}
