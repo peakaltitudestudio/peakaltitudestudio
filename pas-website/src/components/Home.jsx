@@ -4,7 +4,6 @@ import Button from 'react-bootstrap/Button'
 
 import '../styles/Home.scss';
 
-import logo from '../assets/pas-logo.svg';
 import volMute from '../assets/volume-mute.svg'
 import volOn from '../assets/volume-up-fill.svg'
 
@@ -35,13 +34,12 @@ const Home = () => {
           <source src={videoURL} type="video/mp4" />
         </video>
         <div className='content'>
-          <h2>Welcome to</h2>
+          <h3>Welcome to</h3>
           <h1>Peak Altitude</h1>
-          <h1>Studio</h1>
+          <h2>Sutdio</h2>
           <br>
           </br>
         </div>
-        <img src={logo} className="logo" alt="Peak Altitude Studio" />
         <Button className='mute-button' onClick={toggleMute}>
           {isMuted ? <img src={volMute} alt=""/> : <img src={volOn} alt="" />}
         </Button>

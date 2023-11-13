@@ -1,19 +1,51 @@
-@import "../custom.scss";
+@import "../style-variables";
 
 .navbar {
-    padding: 5;
+    padding: 5px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .navbar-toggler {
     margin-right: 5px;
+    border-color: $secondary;
+    background-color: $primary;
 }
 
 .nav-link {
     margin: 10px;
     justify-content: center;
     display: flex;
+    color: $secondary
 }
 
 .nav-link:hover {
+    color: $primary;
+}
+
+.navbar-brand {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+}
+
+.navbar-brand h5 {
+    display: inline;
+    margin-left: 10px;
+    vertical-align: middle;
+    font-family: 'Futura', sans-serif;
+    font-weight: bold;
     color: $secondary;
 }
+
+.brand-name {
+    align-items: center;
+}
+
+.brand-logo {
+    height: 7vh;
+    margin-right: 10px;
+    margin: 0px;
+    padding: 0px;
+}
+// end of file
