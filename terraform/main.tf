@@ -3,8 +3,17 @@ resource "aws_acm_certificate" "pas_acm_cert" {
   validation_method = "DNS"
 }
 
+resource "aws_acm_certificate" "www_pas_acm_cert" {
+  domain_name       = "www.${local.env_dot}peakaltitudestudio.com"
+  validation_method = "DNS"
+}
+
 resource "aws_acm_certificate_validation" "pas_cert_validation" {
   certificate_arn = aws_acm_certificate.pas_acm_cert.arn
+}
+
+resource "aws_acm_certificate_validation" "www_pas_cert_validation" {
+  certificate_arn = aws_acm_certificate.www_pas_acm_cert.arn
 }
 
 resource "aws_route53_record" "pas_cert_cname_record" {
@@ -119,6 +128,18 @@ resource "aws_lb_listener" "https_listener_forward" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pas_target_group.arn
   }
+}
+
+resource "aws_lb_listener" "https_listener_forward_www" {
+  load_balancer_arn = aws_lb.pas_elb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy = "ELBSecurityPolicy-2016-08"
+  certificate_arn = aws_acm_certificate.www_cert.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.pas_target_group.arn
 }
 
 resource "aws_lb_listener" "http_listener_redirect" {
