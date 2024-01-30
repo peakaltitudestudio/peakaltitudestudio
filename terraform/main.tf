@@ -12,10 +12,6 @@ resource "aws_acm_certificate_validation" "pas_cert_validation" {
   certificate_arn = aws_acm_certificate.pas_acm_cert.arn
 }
 
-resource "aws_acm_certificate_validation" "www_pas_cert_validation" {
-  certificate_arn = aws_acm_certificate.www_pas_acm_cert.arn
-}
-
 resource "aws_route53_record" "pas_cert_cname_record" {
   zone_id = var.manually_created_zone_id
   name    = "${element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_name, 0)}"
