@@ -6,7 +6,7 @@ const Portfolio = () => {
         <>
             <PASNavbar />
             <div>
-                Nothing here yet.
+                Actively looking for clients to collaborate with for free to help create my portfolio.
             </div>
         </>
     )
