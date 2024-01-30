@@ -140,6 +140,7 @@ resource "aws_lb_listener" "https_listener_forward_www" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pas_target_group.arn
+  }
 }
 
 resource "aws_lb_listener" "http_listener_redirect" {
