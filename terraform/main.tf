@@ -109,19 +109,6 @@ resource "aws_lb_listener" "https_listener_forward" {
   }
 }
 
-resource "aws_lb_listener" "https_listener_forward_www" {
-  load_balancer_arn = aws_lb.pas_elb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy = "ELBSecurityPolicy-2016-08"
-  certificate_arn = aws_acm_certificate.www_pas_acm_cert.arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.pas_target_group.arn
-  }
-}
-
 resource "aws_lb_listener" "http_listener_redirect" {
   load_balancer_arn = aws_lb.pas_elb.arn
   port              = 80
