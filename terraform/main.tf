@@ -27,6 +27,18 @@ resource "aws_route53_record" "pas_record" {
   }
 }
 
+resource "aws_route53_record" "www_alias_pas_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "www.${local.env_dot}peakaltitudestudio.com"
+  type    = "A"
+
+  alias {
+    zone_id                 = aws_lb.pas_elb.zone_id
+    name                    = aws_lb.pas_elb.dns_name
+    evaluate_target_health  = true
+  }
+}
+
 resource "aws_subnet" "main_pas_subnet" {
   vpc_id                  = aws_vpc.pas_main_vpc.id
   cidr_block              = local.main_subnet_cidr_block
