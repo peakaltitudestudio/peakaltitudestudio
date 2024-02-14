@@ -27,7 +27,7 @@ resource "aws_route53_record" "pas_record" {
   }
 }
 
-resource "aws_route53_record" "www_pas_record" {
+resource "aws_route53_record" "www_alias_pas_record" {
   zone_id = var.manually_created_zone_id
   name    = "www.${local.env_dot}peakaltitudestudio.com"
   type    = "A"

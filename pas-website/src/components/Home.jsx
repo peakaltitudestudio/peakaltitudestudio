@@ -36,7 +36,7 @@ const Home = () => {
         <div className='content'>
           <h3>Welcome to</h3>
           <h1>Peak Altitude</h1>
-          <h2>Sutdio</h2>
+          <h2>Studio</h2>
           <br>
           </br>
         </div>
