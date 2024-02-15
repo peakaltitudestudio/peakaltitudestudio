@@ -6,6 +6,7 @@ resource "aws_acm_certificate" "pas_acm_cert" {
 
 resource "aws_acm_certificate_validation" "pas_cert_validation" {
   certificate_arn = aws_acm_certificate.pas_acm_cert.arn
+  validation_record_fqdns = aws_acm_certificate.pas_acm_cert.domain_validation_options.*.resource_record_name
 }
 
 resource "aws_route53_record" "pas_cert_cname_record" {
@@ -16,9 +17,29 @@ resource "aws_route53_record" "pas_cert_cname_record" {
   records = [element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_value, 0)]
 }
 
+resource "aws_route53_record" "www_pas_cert_cname_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "${element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_name, 1)}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [element(aws_acm_certificate.pas_acm_cert.domain_validation_options[*].resource_record_value, 1)]
+}
+
 resource "aws_route53_record" "pas_record" {
   zone_id = var.manually_created_zone_id
   name    = "${local.env_dot}peakaltitudestudio.com"
+  type    = "A"
+
+  alias {
+    zone_id                 = aws_lb.pas_elb.zone_id
+    name                    = aws_lb.pas_elb.dns_name
+    evaluate_target_health  = true
+  }
+}
+
+resource "aws_route53_record" "www_pas_record" {
+  zone_id = var.manually_created_zone_id
+  name    = "www.${local.env_dot}peakaltitudestudio.com"
   type    = "A"
 
   alias {
