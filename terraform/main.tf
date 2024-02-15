@@ -1,6 +1,6 @@
 resource "aws_acm_certificate" "pas_acm_cert" {
   domain_name       = "${local.env_dot}peakaltitudestudio.com"
-  subject_alternative_names = ["www.${local.env_dot}.peakaltitudestudio.com"]
+  subject_alternative_names = ["www.${local.env_dot}peakaltitudestudio.com"]
   validation_method = "DNS"
 }
 
