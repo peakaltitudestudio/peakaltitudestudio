@@ -129,6 +129,8 @@ resource "aws_lb_listener" "https_listener_forward" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.pas_target_group.arn
   }
+
+  depends_on = [aws_acm_certificate_validation.pas_cert_validation]
 }
 
 resource "aws_lb_listener" "http_listener_redirect" {
