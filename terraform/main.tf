@@ -70,7 +70,7 @@ resource "aws_subnet" "alt_pas_subnet" {
 
 resource "aws_instance" "pas_website_ec2_instance" {
   ami           = "ami-073e64e4c237c08ad"
-  instance_type = "t2.micro"
+  instance_type = "t3a.micro"
   key_name      = "ec2sshkeypair"
   subnet_id     = aws_subnet.main_pas_subnet.id
 
@@ -116,6 +116,12 @@ resource "aws_lb" "pas_elb" {
   enable_http2 = true
 
   security_groups = [aws_security_group.allow_http_and_https_sg.id]
+
+  tags = {
+    Name        = "${local.env_noblank}-pas-elb"
+    Environment = "${local.env_noblank}"
+    Project     = "PAS"
+  }
 }
 
 resource "aws_lb_listener" "https_listener_forward" {
