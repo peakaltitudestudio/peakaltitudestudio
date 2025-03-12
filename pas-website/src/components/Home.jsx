@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PASNavbar from './PASNavbar';
 import Button from 'react-bootstrap/Button'
 
@@ -13,19 +13,13 @@ const mobileVideoBg = 'mobile1080.mp4'
 
 const Home = () => {
   const [isMuted, setIsMuted] = useState(true);
-  const [videoURL, setVideoURL] = useState(baseBucketPath + mainVideoBg);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setVideoURL(window.innerWidth < 1000 
-        ? baseBucketPath + mobileVideoBg 
-        : baseBucketPath + mainVideoBg);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  let videoURL = ""
+  if (window.innerWidth < 1000) {
+    videoURL = baseBucketPath + mobileVideoBg;
+  } else {
+    videoURL = baseBucketPath + mainVideoBg
+  }
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
@@ -43,10 +37,11 @@ const Home = () => {
           <h3>Welcome to</h3>
           <h1>Peak Altitude</h1>
           <h2>Studio</h2>
-          <br />
+          <br>
+          </br>
         </div>
         <Button className='mute-button' onClick={toggleMute}>
-          {isMuted ? <img src={volMute} alt="Mute"/> : <img src={volOn} alt="Unmute" />}
+          {isMuted ? <img src={volMute} alt=""/> : <img src={volOn} alt="" />}
         </Button>
       </div>
     </div>
